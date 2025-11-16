@@ -9,12 +9,14 @@ public class Lesson {
     private List<String>resources;
 
     public Lesson(int lessonId, String title, String content) {
+        validateLesson(lessonId,title);
         this.lessonId=lessonId;
         this.title=title;
         this.content=content;
         this.resources=new ArrayList<>();
     }
     public Lesson(int lessonId, String title, String content, List<String> resources) {
+        validateLesson(lessonId,title);
         this.lessonId=lessonId;
         this.title=title;
         this.content=content;
@@ -22,6 +24,13 @@ public class Lesson {
         if (resources!=null) {
             this.resources.addAll(resources);}
     }
+    public static void validateLesson(int lessonId, String title){
+        if (lessonId < 0) 
+            throw new IllegalArgumentException("lesson id must be positive number!");
+        if (title == null ||title.isEmpty())
+            throw new IllegalArgumentException("Invalid course title");
+    }
+
     public int getLessonId(){return lessonId;}
     public String getTitle(){return title;}
     public String getContent(){return content;}

@@ -8,6 +8,7 @@ public class Course {
     private int instructorId;
     private List<Lesson> lessons;
     private List<Student> students;
+    
 
     public Course(int courseId, String title, String description, int instructorId) {
         validateCourse(courseId,title,instructorId);
@@ -21,7 +22,7 @@ public class Course {
     public static void validateCourse(int courseId, String title, int instructorId){
         if (courseId < 0) 
             throw new IllegalArgumentException("Course id must be positive number!");
-        if (title == null ||title.isEmpty()||title.matches(".*\\d.*"))
+        if (title == null ||title.isEmpty())
             throw new IllegalArgumentException("Invalid course title");
         if (instructorId < 0) 
             throw new IllegalArgumentException("instructor id must be positive number!");

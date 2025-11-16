@@ -12,7 +12,7 @@ public class Instructor extends User{
     public List<Course> getCoursesTeaching(){return new ArrayList<>(coursesTeaching);}
 
     public void assignCourse(String course) {
-        if (!coursesTeaching.contains(course)) {
+        if (!coursesTeaching.contains(course)){
             coursesTeaching.add(course);}}
 
     public void leaveCourse(String course){
