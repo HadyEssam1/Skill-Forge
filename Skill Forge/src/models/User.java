@@ -32,7 +32,7 @@ public static final String[] ROLES={"instructor","student"};
             throw new IllegalArgumentException("Invalid role");
         if (pass==null||pass.length()<8)
         throw new IllegalArgumentException("Password must be atleast 8 characters");
-    };
+    }
 
     public int getUserId(){return id;}
     public String getRole(){return role;}

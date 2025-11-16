@@ -10,12 +10,21 @@ public class Course {
     private List<Student> students;
 
     public Course(int courseId, String title, String description, int instructorId) {
+        validateCourse(courseId,title,instructorId);
         this.courseId=courseId;
         this.title=title;
         this.description=description;
         this.instructorId=instructorId;
         this.lessons=new ArrayList<>();
         this.students=new ArrayList<>();
+    }
+    public static void validateCourse(int courseId, String title, int instructorId){
+        if (courseId < 0) 
+            throw new IllegalArgumentException("Course id must be positive number!");
+        if (title == null ||title.isEmpty()||title.matches(".*\\d.*"))
+            throw new IllegalArgumentException("Invalid course title");
+        if (instructorId < 0) 
+            throw new IllegalArgumentException("instructor id must be positive number!");
     }
 
     public int getCourseId(){return courseId;}
