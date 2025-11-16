@@ -1,22 +1,23 @@
 package service;
+import managers.CourseJsonManager;
 import managers.UserJsonManager;
 import models.Course;
 import models.Instructor;
 import models.Lesson;
 import models.User;
-
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class InstructorService {
+    private UserJsonManager userJsonManager;
+    private CourseJsonManager courseJsonManager;
+
+    public InstructorService(UserJsonManager userJsonManager, CourseJsonManager courseJsonManager){
+        this.userJsonManager = userJsonManager;
+        this.courseJsonManager = courseJsonManager;
+    }
 
     public Course createCourse(String instructorId, String title, String description) {
         try {
-            if (title == null || title.isEmpty() || description == null || description.isEmpty()) {
-                System.out.println("All fields must be filled !");
-                return null;
-            }
-            String courseId = UUID.randomUUID().toString();
 
             Course c = new Course(courseId, title, description, instructorId);
             ArrayList<Course> courses = UserJsonManager.loadFromFiles();
@@ -38,8 +39,7 @@ public class InstructorService {
         }
     }
 
-
-    public boolean editCourse(String courseId, String newTitle, String newDescription) {
+    public Course editCourse(int courseId, String newTitle, String newDescription) {
         try {
             ArrayList<Course> courses = courseJsonManager.loadCourses();
 
@@ -47,31 +47,29 @@ public class InstructorService {
                 if (c.getCourseId().equals(courseId)) {
                     c.setTitle(newTitle);
                     c.setDescription(newDescription);
-                    courseJsonManager.saveCourses(courses);
-                    return true;
+                    courseJsonManager.saveCourses();
+                    return c;
                 }
             }
-
-            return false;
-
+            return null;
         }
         catch (Exception e) {
             System.out.println("Error editing course: " + e.getMessage());
-            return false;
+            return null;
         }
     }
 
-    public Lesson addLesson(String courseId, String title, String content) {
+    public Lesson addLesson(int lessonId, String title, String content) {
         try {
+            Lesson lesson = new Lesson(lessonId, title, content);
+
             ArrayList<Course> courses = courseJsonManager.loadCourses();
 
             for (Course c : courses) {
-                if (c.getCourseId().equals(courseId)) {
+                if (c.getCourseId().equals()) {
 
-                    String lessonId = UUID.randomUUID().toString();
-                    Lesson lesson = new Lesson(lessonId, title, content);
 
-                    c.getLessons().add(lesson);
+                    l.getLessons().add(lesson);
                     courseJsonManager.saveCourses(courses);
                     return lesson;
                 }
@@ -83,6 +81,39 @@ public class InstructorService {
             return null;
         }
     }
+
+    public void addLesson(int courseId, String title, String content) {
+        try {
+            Course c = courseManager.getById(courseId);
+            if (c == null) return;
+
+            int lessonId = c.getLessons().size() + 1;
+            models.Lesson l = new models.Lesson(lessonId, title, content);
+
+            c.getLessons().add(l);
+            courseManager.save();
+        }
+        catch (Exception e){
+            System.out.println("Error adding lesson: " + e.getMessage());
+            return ;
+        }
+
+    }
+
+    public void deleteLesson(int courseId, int lessonId) {
+        Course c = courseJsonManager.getById(courseId);
+        if (c == null) return;
+
+        c.getLessons().removeIf(l -> l.getLessonId() == lessonId);
+        courseJsonManager.save();
+    }
+
+
+    private int generateCourseId() {
+        return courseManager.getAll().size() + 1;
+    }
+
+
 
 
 }
