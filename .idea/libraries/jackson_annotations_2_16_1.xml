@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="jackson-annotations-2.16.1">
+    <CLASSES>
+      <root url="jar://E:/HADY/Intelli J IDEA/Assignments/Lab 7/jackson-annotations-2.16.1.jar!/" />
+      <root url="jar://E:/HADY/Intelli J IDEA/Assignments/Lab 7/jackson-core-2.16.1.jar!/" />
+      <root url="jar://E:/HADY/Intelli J IDEA/Assignments/Lab 7/jackson-databind-2.16.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
