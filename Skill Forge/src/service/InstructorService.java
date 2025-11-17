@@ -1,11 +1,10 @@
 package service;
 import managers.CourseJsonManager;
 import managers.UserJsonManager;
-import models.Course;
-import models.Instructor;
-import models.Lesson;
-import models.User;
+import models.*;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class InstructorService {
     private UserJsonManager userJsonManager;
@@ -63,53 +62,80 @@ public class InstructorService {
         }
     }
 
-    public void deleteCourse(int instructorId, int courseId)throws Exception{
-        Course c = courseJsonManager.getCourseId(courseId);
-        if (c==null)return;
+    public boolean deleteCourse(int instructorId, int courseId) {
 
-        c.
+        Instructor inst = (Instructor) userJsonManager.getById(instructorId);
+        if (inst == null) return false;
 
-    }
+        Course cr = courseJsonManager.getById(courseId);
+        if (cr == null) return false;
 
-    public Lesson addLesson(int lessonId, String title, String content) {
-        try {
-            Lesson lesson = new Lesson(lessonId, title, content);
-
-            ArrayList<Course> courses = courseJsonManager.loadCourses();
-
-            for (Course c : courses) {
-                if (c.getCourseId().equals()) {
-
-
-                    l.getLessons().add(lesson);
-                    courseJsonManager.saveCourses(courses);
-                    return lesson;
-                }
-            }
-            return null;
-
-        } catch (Exception e) {
-            System.out.println("Error adding lesson: " + e.getMessage());
-            return null;
+        if (cr.getInstructorId() != instructorId) {                   // byshof el course dah bta3 el instructor wala la
+            System.out.println("Instructor does not own this course.");
+            return false;
         }
+        inst.getCreatedCourses().remove(Integer.valueOf(courseId));
+
+        List<Course> allCourses = courseJsonManager.getAll();
+        allCourses.removeIf(c -> c.getCourseId() == courseId);
+
+        courseJsonManager.save();
+        userJsonManager.save();
+        return true;
     }
+
+//    public Lesson addLesson(int lessonId, String title, String content) {
+//        try {
+//            Lesson lesson = new Lesson(lessonId, title, content);
+//
+//            ArrayList<Course> courses = courseJsonManager.loadCourses();
+//
+//            for (Course c : courses) {
+//                if (c.getCourseId().equals()) {
+//
+//
+//                    l.getLessons().add(lesson);
+//                    courseJsonManager.saveCourses(courses);
+//                    return lesson;
+//                }
+//            }
+//            return null;
+//
+//        } catch (Exception e) {
+//            System.out.println("Error adding lesson: " + e.getMessage());
+//            return null;
+//        }
+//    }
 
     public void addLesson(int courseId, String title, String content) {
         try {
-            Course c = courseManager.getById(courseId);
+            Course c = courseJsonManager.getCourseId(courseId);
             if (c == null) return;
 
             int lessonId = c.getLessons().size() + 1;
             models.Lesson l = new models.Lesson(lessonId, title, content);
 
             c.getLessons().add(l);
-            courseManager.save();
+            courseJsonManager.saveToJson();
         }
         catch (Exception e){
             System.out.println("Error adding lesson: " + e.getMessage());
             return ;
         }
 
+    }
+
+    public void editLesson(int courseId, int lessonId, String newTitle, String newContent) {
+        Course c = courseJsonManager.getCourseId(courseId);
+        if (c == null) return;
+
+        models.Lesson l = c.getLessonId(lessonId);
+        if (l == null) return;
+
+        l.setTitle(newTitle);
+        l.setContent(newContent);
+
+        courseJsonManager.saveToFile();
     }
 
     public void deleteLesson(int courseId, int lessonId) {
@@ -120,6 +146,38 @@ public class InstructorService {
         courseJsonManager.save();
     }
 
+    public List<Course>courses getInstructorCourses( int instructorId){
+
+        ArrayList<Course>allCourses = courseJsonManager.getAll();
+        List<Course>instructorCourses = new ArrayList<>();
+
+        for (Course c : allCourses){
+            if (instructorId == c.getInstructorId()){
+                instructorCourses.add(c);
+            }
+        }
+        return instructorCourses;
+    }
+
+    public List<Student> viewEnrolledStudents(int courseId){
+        ArrayList<Course>courses = courseJsonManager.loadFromJson();
+    }
+
+
+    public List<Student> viewEnrolledStudents(int courseId) {
+        Course c = courseJsonManager.getById(courseId);
+        if (c == null) return new ArrayList<>();
+
+        List<Student> result = new ArrayList<>();
+
+        for (int studentId : c.getStudents()) {
+            User u = userJsonManager.getUserId(studentId);
+            if (u instanceof Student) {
+                result.add((Student) u);
+            }
+        }
+        return result;
+    }
 
 
 
