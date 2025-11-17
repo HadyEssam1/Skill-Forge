@@ -1,60 +1,46 @@
 package managers;
-import models.Course;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import models.User;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.ArrayList;
 
+public class UserJsonManager extends JsonManager<User> {
 
-public class UserJsonManager extends JsonManager {
-    private List<User> users;
-    private static final Type USER_LIST_TYPE=new TypeToken<List<User>>(){}.getType();
-    public UserJsonManager(String filePath){
-        super(filePath);
-        loadFromJson();
+    public UserJsonManager() {
+        super("data/users.json", new TypeReference<List<User>>() {});
     }
-    @Override
-    public ArrayList<Course> loadFromJson(){
-        this.users=readFile(USER_LIST_TYPE);
-        if (this.users==null) {
-            this.users=new ArrayList<>();
-        }
 
+    public User getById(int id) {
+        for (User u : data) {
+            if (u.getUserId() == id)
+                return u;
+        }
         return null;
     }
-    @Override
-    public void saveToJson(){
-        writeFile(users);
+
+    public User getByUsername(String username) {
+        for (User u : data) {
+            if (u.getUsername().equalsIgnoreCase(username))
+                return u;
+        }
+        return null;
     }
 
-    public User findById(int id){
-        for(User u:this.users){
-            if(u.getUserId().equals(id)){
+    public User getByEmail(String email) {
+        for (User u : data) {
+            if (u.getEmail().equalsIgnoreCase(email))
                 return u;
+        }
+        return null;
+    }
+
+    public void update(User updatedUser) {
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i).getUserId() == updatedUser.getUserId()) {
+                data.set(i, updatedUser);
+                save();
+                return;
             }
         }
-        return null;
     }
-    public User findByUsername(String username){
-        for(User u:this.users){
-            if(u.getUsername().equalsIgnoreCase(username)){
-                return u;
-            }
-        }
-        return null;
-    }
-    public User findByEmail(String email){
-        for(User u:this.users){
-            if(u.getEmail().equalsIgnoreCase(email)){
-                return u;
-            }
-        }
-        return null;
-    }
-    public void addUser(User user){
-        this.users.add(user);
-        saveToJson();
-    }
-
 }

@@ -1,58 +1,29 @@
 package managers;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import models.Course;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.ArrayList;
 
-    public class CourseJsonManager extends JsonManager {
-        private List<Course> courses;
-        private static final Type COURSE_LIST_TYPE = new TypeToken<List<Course>>() {
-        }.getType();
+public class CourseJsonManager extends JsonManager<Course> {
 
-        public CourseJsonManager(String filePath) {
-            super(filePath);
-            loadFromJson();
+    public CourseJsonManager() {
+        super("data/courses.json", new TypeReference<List<Course>>() {});
+    }
+
+    public Course getById(int id) {
+        for (Course c : data) {
+            if (c.getCourseId() == id)
+                return c;
         }
+        return null;
+    }
 
-        @Override
-        public ArrayList<Course> loadFromJson() {
-            this.courses = readFile(COURSE_LIST_TYPE);
-            if (this.courses == null) {
-                this.courses = new ArrayList<>();
+    public void update(Course updated) {
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i).getCourseId() == updated.getCourseId()) {
+                data.set(i, updated);
+                save();
             }
-            return null;
-        }
-
-        @Override
-        public void saveToJson() {
-            writeFile(this.courses);
-        }
-
-        public Course findById(int courseId) {
-            for (Course c : this.courses) {
-                if (c.getCourseId() == courseId ) {
-                    return c;
-                }
-            }
-            return null;
-        }
-
-        public void addCourse(Course course) {
-            this.courses.add(course);
-            saveToJson();
-        }
-
-        public boolean deleteCourse(int courseId) {
-            boolean deleted = this.courses.removeIf(c -> c.getCourseId().equals(courseId));
-            if (deleted) {
-                saveToJson();
-            }
-
-            return deleted;
-        }
-
-        public ArrayList<Course> getAll() {
-            return new ArrayList<>(courses); // return copy for safety
         }
     }
+}

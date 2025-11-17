@@ -1,15 +1,23 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+package yourPackageName; // عدّل الاسم لو عندك باكدج
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+import javax.swing.*;
+import managers.*;
+import service.*;
+import frontend.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+            UserJsonManager userJsonManager = new UserJsonManager();
+            CourseJsonManager courseJsonManager = new CourseJsonManager();
+            UserService userService = new UserService();
+            CourseService courseService = new CourseService(courseJsonManager);
+            InstructorService instructorService = new InstructorService(courseJsonManager, userJsonManager);
+            StudentService studentService = new StudentService(userJsonManager, courseJsonManager);
+            Login loginFrame = new Login(userService, instructorService, studentService, courseService);
+            loginFrame.setVisible(true);
+        });
     }
 }

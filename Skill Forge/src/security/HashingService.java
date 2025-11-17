@@ -15,19 +15,19 @@ public class HashingService {
     public String hash(String password) {
         byte[]hashedBytes;
         try{
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        //creates the messageDigest object for SHA-256
-        hashedBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
-        //getBytes converts string password to bytes.
-        //md.digest preforms hashing operation.
-        } 
-            catch (NoSuchAlgorithmException e) {//messageDigest methods may throw checked exception if teh SHA-256 is not recognised.
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            //creates the messageDigest object for SHA-256
+            hashedBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            //getBytes converts string password to bytes.
+            //md.digest preforms hashing operation.
+        }
+        catch (NoSuchAlgorithmException e) {//messageDigest methods may throw checked exception if teh SHA-256 is not recognised.
             //it is  a checked exception so teh code will not work without handling it so:)
-        throw new RuntimeException("SHA-256 algorithm not available", e);
-       }
+            throw new RuntimeException("SHA-256 algorithm not available", e);
+        }
 
-        return toHex(hashedBytes);//converts the 32 byte to 64 hexadecimal characters. 
-      }
+        return toHex(hashedBytes);//converts the 32 byte to 64 hexadecimal characters.
+    }
     public boolean verify(String passwordIp, String hashed){
         String userPassword=hash(passwordIp);//hashing of the new input.
         if (userPassword.equals(hashed))//compares the user input to teh stored hexadecimal hashed password.

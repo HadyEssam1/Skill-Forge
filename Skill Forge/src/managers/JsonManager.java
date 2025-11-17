@@ -1,58 +1,62 @@
 package managers;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import models.Course;
 
-public abstract class JsonManager {
-    protected String filePath;
-    public JsonManager(String filePath) {
+public abstract class JsonManager<T> {
+
+    protected List<T> data = new ArrayList<>();
+    protected final String filePath;
+    protected final ObjectMapper mapper = new ObjectMapper();
+    protected final TypeReference<List<T>> typeReference;
+
+    public JsonManager(String filePath, TypeReference<List<T>> typeReference) {
         this.filePath = filePath;
+        this.typeReference = typeReference;
+        load();
     }
-    public abstract void saveToJson();
-    public abstract ArrayList<Course> loadFromJson();
-    protected <T> List<T> readFile(Type type) {
-        Gson gson=new Gson();
-        try(Reader reader = new FileReader(filePath)) {
-            if (reader.ready()) {
-                List<T> data = gson.fromJson(reader, type);
-                return data;
+
+    public final void load() {
+        try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                save();
+                throw new Exception("File not found");
             }
-        } catch(FileNotFoundException e){
+            if (file.length() == 0) {
+                save();
+                throw new Exception("there is no data");
+            }
 
-        }
-        catch(IOException e){
+            data = mapper.readValue(file, typeReference);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            data = new ArrayList<>();
         }
-        catch(JsonSyntaxException e){
-
-        }
-        catch(Exception e){
-
-        }
-        return new ArrayList<>();
     }
 
+    public final void save() {
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), data);
+        } catch (Exception ignored) {}
+    }
 
-    protected <T> void writeFile(List<T> data){
-        Gson gson=new Gson();
-        try(Writer writer=new FileWriter(filePath)){
-            gson.toJson(data,writer);
-        }
-        catch (IOException e){
+    public List<T> getAll() {
+        return data;
+    }
 
-        }
-        catch (Exception e) {
+    public void add(T obj) {
+        data.add(obj);
+        save();
+    }
 
-        }
+    public void delete(T obj) {
+        data.remove(obj);
+        save();
     }
 }
