@@ -1,4 +1,4 @@
 package managers;
 
-public class UserJsonManager {
+public class UserJsonManager extends JsonManager{
 }

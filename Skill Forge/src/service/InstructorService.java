@@ -16,6 +16,10 @@ public class InstructorService {
         this.courseJsonManager = courseJsonManager;
     }
 
+    private int generateCourseId() {
+        return courseJsonManager.getAllCousres().size() + 1;
+    }
+
     public Course createCourse(String instructorId, String title, String description) {
         try {
 
@@ -57,6 +61,14 @@ public class InstructorService {
             System.out.println("Error editing course: " + e.getMessage());
             return null;
         }
+    }
+
+    public void deleteCourse(int instructorId, int courseId)throws Exception{
+        Course c = courseJsonManager.getCourseId(courseId);
+        if (c==null)return;
+
+        c.
+
     }
 
     public Lesson addLesson(int lessonId, String title, String content) {
@@ -109,9 +121,7 @@ public class InstructorService {
     }
 
 
-    private int generateCourseId() {
-        return courseManager.getAll().size() + 1;
-    }
+
 
 
 
