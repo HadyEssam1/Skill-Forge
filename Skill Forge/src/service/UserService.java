@@ -66,6 +66,7 @@ public class UserService {
             }
             // Save user
             userJsonManager.add(newUser);
+            userJsonManager.save();
             return newUser;
 
     }

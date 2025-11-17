@@ -20,4 +20,12 @@
   "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
   "coursesTeaching" : [ 1, 2 ],
   "userId" : 2
+}, {
+  "role" : "student",
+  "username" : "Hady Essam",
+  "email" : "hady.essam@gmail.com",
+  "hashPass" : "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+  "coursesEnrolled" : [ ],
+  "progressMap" : { },
+  "userId" : 3
 } ]
