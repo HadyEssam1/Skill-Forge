@@ -1,5 +1,3 @@
-package yourPackageName; // عدّل الاسم لو عندك باكدج
-
 import javax.swing.*;
 import managers.*;
 import service.*;
