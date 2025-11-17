@@ -55,5 +55,4 @@ public class UserJsonManager extends JsonManager {
         saveToJson();
     }
 
-public class UserJsonManager extends JsonManager{
 }

@@ -5,8 +5,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.ArrayList;
 
-public class CourseJsonManager extends JsonManager {
-}
     public class CourseJsonManager extends JsonManager {
         private List<Course> courses;
         private static final Type COURSE_LIST_TYPE = new TypeToken<List<Course>>() {
