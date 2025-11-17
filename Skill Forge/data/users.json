@@ -1,0 +1,23 @@
+[ {
+  "role" : "student",
+  "username" : "Hassan Tarek",
+  "email" : "hassan.tarek.695@gmail.com",
+  "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
+  "coursesEnrolled" : [ 1, 2 ],
+  "progressMap" : {
+    "1" : {
+      "1" : true,
+      "2" : true,
+      "5" : true
+    },
+    "2" : { }
+  },
+  "userId" : 1
+}, {
+  "role" : "instructor",
+  "username" : "Hassan",
+  "email" : "hassan.tarek@gmail.com",
+  "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
+  "coursesTeaching" : [ 1, 2 ],
+  "userId" : 2
+} ]

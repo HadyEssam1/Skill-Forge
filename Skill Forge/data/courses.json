@@ -1,0 +1,35 @@
+[ {
+  "courseId" : 1,
+  "title" : "Logic2",
+  "description" : "Compu",
+  "instructorId" : 2,
+  "lessons" : [ {
+    "lessonId" : 1,
+    "title" : "L1",
+    "content" : "first Lesson",
+    "resources" : [ ]
+  }, {
+    "lessonId" : 2,
+    "title" : "L2",
+    "content" : "Second",
+    "resources" : [ ]
+  }, {
+    "lessonId" : 3,
+    "title" : "l3",
+    "content" : "Third",
+    "resources" : [ ]
+  }, {
+    "lessonId" : 5,
+    "title" : "L4",
+    "content" : "Fourth",
+    "resources" : [ ]
+  } ],
+  "studentIds" : [ 1 ]
+}, {
+  "courseId" : 2,
+  "title" : "Prog",
+  "description" : "Compu",
+  "instructorId" : 2,
+  "lessons" : [ ],
+  "studentIds" : [ 1 ]
+} ]
