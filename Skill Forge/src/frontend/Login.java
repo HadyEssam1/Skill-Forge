@@ -1,4 +1,6 @@
 package frontend;
+import managers.CourseJsonManager;
+import managers.UserJsonManager;
 import models.Instructor;
 import models.Student;
 import models.User;
@@ -16,20 +18,17 @@ public class Login extends JFrame {
     private CourseService courseService;
     private InstructorService instructorService;
     private StudentService studentService;
-    private LessonService lessonService;
-
 
     private JTextField jTextField1;
     private JPasswordField jPasswordField1;
     private JButton jButton1, jButton2;
     private JLabel jLabel1, jLabel2, jLabel3, signUpLabel;
     private JPanel jPanel2;
-    public Login(UserService userService ,InstructorService instructorService,StudentService studentService,CourseService courseService,LessonService lessonService ) {
+    public Login(UserService userService ,InstructorService instructorService,StudentService studentService,CourseService courseService ) {
        this.userService=userService;
        this.instructorService=instructorService;
        this.studentService=studentService;
        this.courseService=courseService;
-       this.lessonService=lessonService;
     initComponents();
     }
     private void initComponents() {
@@ -98,27 +97,29 @@ public class Login extends JFrame {
         jButton1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String userName = jTextField1.getText();
+                try{
+                String email = jTextField1.getText();
                 String passWord = jPasswordField1.getText();
-                User user = userService.login(userName,passWord);
+                User user = null;
+                    user = userService.login(email,passWord);
                 if (user!=null) {
                     if (user instanceof Instructor) {
                         Instructor instructor = (Instructor) user;
                         dispose();
-                        InstructorDashboard  instructorDashboard = new InstructorDashboard();
+                        InstructorDashboard instructorDashboard = new InstructorDashboard(instructor,instructorService,courseService);
                         instructorDashboard.setVisible(true);
-                    }
-                    else if (user instanceof Student)
-                    {
-                        Student student =(Student) user;
+                    } else if (user instanceof Student) {
+                        Student student = (Student) user;
                         dispose();
-                        StudentDashboard studentDashboard =new StudentDashboard(student,studentService,courseService);
+                        StudentDashboard studentDashboard = new StudentDashboard(student, studentService, courseService);
                         studentDashboard.setVisible(true);
+                    } else {
+                        throw new Exception("Invalid Username and Password");
                     }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null,"Invalid Username and Password");
-                    }
+                }
+                }catch (Exception e1)
+                {
+                    JOptionPane.showMessageDialog(null, ""+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -138,19 +139,7 @@ public class Login extends JFrame {
             }
         }
         );
-    }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                 UserService userService = new UserService();
-                 CourseService courseService = new CourseService();
-                 InstructorService instructorService = new InstructorService();
-                 StudentService studentService = new StudentService();
-                 LessonService lessonService=new LessonService();
-                Login login = new Login(userService,instructorService,studentService,courseService,lessonService);
-                login.setVisible(true);
-            }
-        });
+
     }
 }
 

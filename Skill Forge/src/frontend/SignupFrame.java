@@ -117,6 +117,7 @@ public class SignupFrame extends JFrame {
         btnSignup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try{
                 String username = txtUsername.getText().trim();
                 String email = txtEmail.getText().trim();
                 String password = new String(txtPassword.getPassword());
@@ -124,20 +125,23 @@ public class SignupFrame extends JFrame {
                 String accountType = (String) accountTypeCombo.getSelectedItem();
 
                 if (!password.equals(confirmPassword)) {
-                    JOptionPane.showMessageDialog(null, "Password and Confirm Password do not match!", "Error", JOptionPane.ERROR_MESSAGE);
+                    throw new Exception("Password and Confirm Password do not match!");
                 }
                 else if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Please fill all fields!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+                    throw new Exception("Please fill all fields!");
                 }
                 else {
-                    //User user = userService.signup(username, email, password, accountType);
-//                    if (user != null) {
-//                        JOptionPane.showMessageDialog(null, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-//                        dispose();
-//                    } else {
-//                        JOptionPane.showMessageDialog(null, "Signup failed. Email may already exist.", "Error", JOptionPane.ERROR_MESSAGE);
-//                    }
+                    User user = userService.signup(email, username, password, accountType);
+                    if (user != null) {
+                        throw new Exception("Account created successfully!");
+                    } else {
+                        throw new Exception( "Signup failed. Email may already exist.");
+                    }
+                }}
+                catch (Exception e1)
+                {
+                    JOptionPane.showMessageDialog(null, ""+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
                 }
             }
         });
@@ -151,12 +155,4 @@ public class SignupFrame extends JFrame {
                 }
         );
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            UserService userService = new UserService();
-            SignupFrame signupFrame = new SignupFrame(userService);
-            signupFrame.setVisible(true);
-        });
     }
-}
