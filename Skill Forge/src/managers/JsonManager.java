@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import models.Course;
 
 public abstract class JsonManager {
     protected String filePath;
@@ -18,7 +19,7 @@ public abstract class JsonManager {
         this.filePath = filePath;
     }
     public abstract void saveToJson();
-    public abstract void loadFromJson();
+    public abstract ArrayList<Course> loadFromJson();
     protected <T> List<T> readFile(Type type) {
         Gson gson=new Gson();
         try(Reader reader = new FileReader(filePath)) {

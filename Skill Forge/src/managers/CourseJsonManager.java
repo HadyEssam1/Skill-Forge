@@ -16,11 +16,12 @@ import java.util.ArrayList;
         }
 
         @Override
-        public void loadFromJson() {
+        public ArrayList<Course> loadFromJson() {
             this.courses = readFile(COURSE_LIST_TYPE);
             if (this.courses == null) {
                 this.courses = new ArrayList<>();
             }
+            return null;
         }
 
         @Override
@@ -28,9 +29,9 @@ import java.util.ArrayList;
             writeFile(this.courses);
         }
 
-        public Course findById(String courseId) {
+        public Course findById(int courseId) {
             for (Course c : this.courses) {
-                if (c.getCourseId().equals(courseId)) {
+                if (c.getCourseId() == courseId ) {
                     return c;
                 }
             }
@@ -42,12 +43,16 @@ import java.util.ArrayList;
             saveToJson();
         }
 
-        public boolean deleteCourse(String courseId) {
+        public boolean deleteCourse(int courseId) {
             boolean deleted = this.courses.removeIf(c -> c.getCourseId().equals(courseId));
             if (deleted) {
                 saveToJson();
             }
 
             return deleted;
+        }
+
+        public ArrayList<Course> getAll() {
+            return new ArrayList<>(courses); // return copy for safety
         }
     }

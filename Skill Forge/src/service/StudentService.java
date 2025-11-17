@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentService {
-    private UserJsonManager userJsonManager;
-    private CourseJsonManager courseJsonManager;
+    private final UserJsonManager userJsonManager;
+    private final CourseJsonManager courseJsonManager;
 
     public StudentService(UserJsonManager userJsonManager,CourseJsonManager courseJsonManager){
         this.userJsonManager = userJsonManager;
@@ -19,7 +19,7 @@ public class StudentService {
     }
 
     public ArrayList<Course> browseCourses(){
-        return courseJsonManager.loadCourses();
+        return courseJsonManager.loadFromJson();
     }
 
 
@@ -52,8 +52,8 @@ public class StudentService {
 
 
     public boolean enrollCourse(int studentId , int courseId)throws Exception{
-        Student s = (Student)userJsonManager.getStudentId(studentId);
-        Course c = courseJsonManager.getCourseId(courseId);
+        Student s = (Student)userJsonManager.findById(studentId);
+        Course c = courseJsonManager.findById(courseId);
 
         if (s==null || c==null){return false;}
 
@@ -64,35 +64,35 @@ public class StudentService {
         c.enrollStudent(s);
         s.addCourse(c);
 
-        userJsonManager.saveToFile();
-        courseJsonManager.saveToFile();
+        userJsonManager.saveToJson();
+        courseJsonManager.saveToJson();
         return true;
 
     }
 
     public boolean dropCourse(int studentId , int courseId)throws Exception{
-        Student s = (Student)userJsonManager.getStudentId(studentId);
-        Course c = courseJsonManager.getCourseId(courseId);
+        Student s = (Student)userJsonManager.findById(studentId);
+        Course c = courseJsonManager.findById(courseId);
 
         if (s == null || c == null) return false;
 
         s.dropCourse(courseId);
         c.removeStudent(studentId);
 
-        userJsonManager.saveToFile();
-        courseJsonManager.saveToFile();
+        userJsonManager.saveToJson();
+        courseJsonManager.saveToJson();
         return true;
     }
 
     public List<Course> searchAvailableCourses(int studentId, String keyword)throws Exception {
 
-        Student st = (Student) userManager.getById(studentId);
+        Student st = (Student) userJsonManager.findById(studentId);
         if (st == null) return new ArrayList<>();
 
         String k = keyword.toLowerCase();
 
         List<Integer> enrolled = st.getEnrolledCourses();
-        List<Course> courses = courseManager.getAll();
+        List<Course> courses = courseJsonManager.getAll();
 
         List<Course> result = new ArrayList<>();
 
@@ -131,15 +131,15 @@ public class StudentService {
 
 
     public List<Course> viewEnrolledCourses(int studentId){
-        Student s = (Student)userJsonManager.getStudentId(studentId);
+        Student s = (Student)userJsonManager.findById(studentId);
         if (s==null) return null;
 
         return s.getCoursesEnrolled();
     }
 
     public boolean setLessonProgress(int studentId, int courseId, int lessonId, boolean done) {
-        Student st = (Student) userManager.getById(studentId);
-        Course cr = courseManager.getById(courseId);
+        Student st = (Student) userJsonManager.findById(studentId);
+        Course cr = courseJsonManager.findById(courseId);
 
         if (st == null || cr == null) return false;
 
@@ -153,19 +153,13 @@ public class StudentService {
         if (target == null) return false;
 
         st.setLessonProgress(courseId, lessonId, done);
-        userManager.save();
+        userJsonManager.saveToJson();
         return true;
     }
 
     public boolean getLessonProgress(int studentId, int courseId, int lessonId) {
-        Student st = (Student) userManager.getById(studentId);
+        Student st = (Student) userJsonManager.findById(studentId);
         if (st == null) return false;
         return st.getLessonProgress(courseId, lessonId);
     }
-
-
-
-
-
-
 }

@@ -1,4 +1,5 @@
 package managers;
+import models.Course;
 import models.User;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -14,19 +15,20 @@ public class UserJsonManager extends JsonManager {
         loadFromJson();
     }
     @Override
-    public void loadFromJson(){
+    public ArrayList<Course> loadFromJson(){
         this.users=readFile(USER_LIST_TYPE);
         if (this.users==null) {
             this.users=new ArrayList<>();
         }
 
+        return null;
     }
     @Override
     public void saveToJson(){
         writeFile(users);
     }
 
-    public User findById(String id){
+    public User findById(int id){
         for(User u:this.users){
             if(u.getUserId().equals(id)){
                 return u;

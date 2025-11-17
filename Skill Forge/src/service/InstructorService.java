@@ -23,18 +23,18 @@ public class InstructorService {
         try {
 
             Course c = new Course(courseId, title, description, instructorId);
-            ArrayList<Course> courses = UserJsonManager.loadFromFiles();
+            ArrayList<Course> courses = courseJsonManager.loadFromJson();
             courses.add(c);
-            courses.saveToFile();                          //.....
+            courseJsonManager.saveToJson();                          //.....
 
-            ArrayList<User> users = UserJsonManager.loadFromFiles(); //............
+            ArrayList<User> users = userJsonManager.loadFromJson(); //............
             for (User i : users) {
                 if (i.getUserId().equals(instructorId) && i instanceof Instructor) {
                     ((Instructor) i).getCreatedCourses().add(courseId);
                 }
             }
-            userJsonManager.saveUsers(users);
-            return course;
+            userJsonManager.saveToJson();
+            return c;
         }
         catch (Exception e) {
             System.out.println("Error in creating a course !");
@@ -44,13 +44,13 @@ public class InstructorService {
 
     public Course editCourse(int courseId, String newTitle, String newDescription) {
         try {
-            ArrayList<Course> courses = courseJsonManager.loadCourses();
+            ArrayList<Course> courses = courseJsonManager.loadFromJson();
 
             for (Course c : courses) {
-                if (c.getCourseId().equals(courseId)) {
+                if (c.getCourseId()==courseId) {
                     c.setTitle(newTitle);
                     c.setDescription(newDescription);
-                    courseJsonManager.saveCourses();
+                    courseJsonManager.saveToJson();
                     return c;
                 }
             }
@@ -64,10 +64,10 @@ public class InstructorService {
 
     public boolean deleteCourse(int instructorId, int courseId) {
 
-        Instructor inst = (Instructor) userJsonManager.getById(instructorId);
+        Instructor inst = (Instructor) userJsonManager.findById(instructorId);
         if (inst == null) return false;
 
-        Course cr = courseJsonManager.getById(courseId);
+        Course cr = courseJsonManager.findById(courseId);
         if (cr == null) return false;
 
         if (cr.getInstructorId() != instructorId) {                   // byshof el course dah bta3 el instructor wala la
@@ -79,8 +79,8 @@ public class InstructorService {
         List<Course> allCourses = courseJsonManager.getAll();
         allCourses.removeIf(c -> c.getCourseId() == courseId);
 
-        courseJsonManager.save();
-        userJsonManager.save();
+        courseJsonManager.saveToJson();
+        userJsonManager.saveToJson();
         return true;
     }
 
@@ -109,7 +109,7 @@ public class InstructorService {
 
     public void addLesson(int courseId, String title, String content) {
         try {
-            Course c = courseJsonManager.getCourseId(courseId);
+            Course c = courseJsonManager.findById(courseId);
             if (c == null) return;
 
             int lessonId = c.getLessons().size() + 1;
@@ -139,11 +139,11 @@ public class InstructorService {
     }
 
     public void deleteLesson(int courseId, int lessonId) {
-        Course c = courseJsonManager.getById(courseId);
+        Course c = courseJsonManager.findById(courseId);
         if (c == null) return;
 
         c.getLessons().removeIf(l -> l.getLessonId() == lessonId);
-        courseJsonManager.save();
+        courseJsonManager.saveToJson();
     }
 
     public List<Course>courses getInstructorCourses( int instructorId){
@@ -159,19 +159,14 @@ public class InstructorService {
         return instructorCourses;
     }
 
-    public List<Student> viewEnrolledStudents(int courseId){
-        ArrayList<Course>courses = courseJsonManager.loadFromJson();
-    }
-
-
     public List<Student> viewEnrolledStudents(int courseId) {
-        Course c = courseJsonManager.getById(courseId);
+        Course c = courseJsonManager.findById(courseId);
         if (c == null) return new ArrayList<>();
 
         List<Student> result = new ArrayList<>();
 
-        for (int studentId : c.getStudents()) {
-            User u = userJsonManager.getUserId(studentId);
+        for (Student studentId : c.getStudents()) {
+            User u = userJsonManager.findById(studentId.getUserId());
             if (u instanceof Student) {
                 result.add((Student) u);
             }
