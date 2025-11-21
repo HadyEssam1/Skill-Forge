@@ -99,7 +99,7 @@ public class SignupFrame extends JFrame {
         lblType.setBounds(20, 270, 120, 25);
         formPanel.add(lblType);
 
-        accountTypeCombo = new JComboBox<>(new String[]{"Student", "Instructor"});
+        accountTypeCombo = new JComboBox<>(new String[]{"Admin","Student","Instructor"});
         accountTypeCombo.setBounds(150, 270, 240, 30);
         formPanel.add(accountTypeCombo);
 

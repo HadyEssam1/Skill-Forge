@@ -65,7 +65,7 @@ public class InstructorDashboard extends JFrame {
         coursesPanel.add(lblCourses);
 
         coursesTable = new JTable(new DefaultTableModel(
-                new String[]{"Course ID", "Title", "Description"}, 0));
+                new String[]{"Course ID", "Title", "Description","Status"}, 0));
         JScrollPane scrollCourses = new JScrollPane(coursesTable);
         scrollCourses.setBounds(10, 40, 460, 250);
         coursesPanel.add(scrollCourses);
@@ -90,7 +90,7 @@ public class InstructorDashboard extends JFrame {
         btnViewStudents.setBounds(10, 350, 120, 35);
         coursesPanel.add(btnViewStudents);
 
-        // ---------- Course Info Panel ----------
+        //Course Info Panel
         courseInfoPanel = new JPanel(null);
         courseInfoPanel.setBounds(500, 10, 480, 400);
         courseInfoPanel.setBackground(new Color(65, 85, 95));
@@ -127,7 +127,7 @@ public class InstructorDashboard extends JFrame {
         txtCourseDesc.setBounds(110, 130, 300, 100);
         courseInfoPanel.add(txtCourseDesc);
 
-        // ---------- Lessons Panel ----------
+        //Lessons Panel
         lessonsPanel = new JPanel(null);
         lessonsPanel.setBounds(10, 10, 970, 500);
         lessonsPanel.setBackground(new Color(65, 85, 95));
@@ -155,7 +155,7 @@ public class InstructorDashboard extends JFrame {
         btnCloseLessons.setBounds(620, 160, 120, 35);
         lessonsPanel.add(btnCloseLessons);
 
-        // ---------- Enrolled Students Panel ----------
+        //Enrolled Students Panel
         enrolledStudentsPanel = new JPanel(null);
         enrolledStudentsPanel.setBounds(10, 10, 970, 500);
         enrolledStudentsPanel.setBackground(new Color(65, 85, 95));
@@ -442,7 +442,7 @@ public class InstructorDashboard extends JFrame {
         List<Course> availableCourses = instructorService.getInstructorCourses(instructor.getUserId());
         model.setRowCount(0);
         for (Course c : availableCourses) {
-            model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription()});
+            model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(),c.getStatus()});
         }}
     private void addCourse () {
             try {

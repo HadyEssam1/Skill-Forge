@@ -11,7 +11,7 @@ public abstract class User {
     protected String email;
     protected String hashPass;
 
-    public static final String[] ROLES = {"instructor", "student"};
+    public static final String[] ROLES = {"instructor", "student","admin"};
 
     public User() {}
 

@@ -74,4 +74,12 @@
   "status" : "APPROVED",
   "lessons" : [ ],
   "studentIds" : [ ]
+}, {
+  "courseId" : 8,
+  "title" : "prog4",
+  "description" : "compu",
+  "instructorId" : 2,
+  "status" : "APPROVED",
+  "lessons" : [ ],
+  "studentIds" : [ ]
 } ]

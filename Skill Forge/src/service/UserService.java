@@ -1,6 +1,7 @@
 package service;
 
 import managers.UserJsonManager;
+import models.Admin;
 import models.Instructor;
 import models.Student;
 import models.User;
@@ -55,7 +56,14 @@ public class UserService {
                         email
                 );
             }
-
+            else if (role.equalsIgnoreCase("admin")) {
+                newUser = new Admin(
+                        generateId(),
+                        username,
+                        passwordHash,
+                        email
+                );
+            }
             else {
                 throw new Exception("Invalid role!");
             }

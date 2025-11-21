@@ -2,6 +2,7 @@ package managers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.Admin;
 import models.Instructor;
 import models.Student;
 import models.User;
@@ -39,6 +40,8 @@ public class UserJsonManager extends JsonManager<User> {
                             user = mapper.treeToValue(node, Student.class);
                     case "instructor" ->
                             user = mapper.treeToValue(node, Instructor.class);
+                    case "admin" ->
+                            user = mapper.treeToValue(node, Admin.class) ;
                     default -> {
                         continue;
                     }

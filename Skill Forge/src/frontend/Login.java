@@ -1,6 +1,7 @@
 package frontend;
 import managers.CourseJsonManager;
 import managers.UserJsonManager;
+import models.Admin;
 import models.Instructor;
 import models.Student;
 import models.User;
@@ -18,17 +19,18 @@ public class Login extends JFrame {
     private CourseService courseService;
     private InstructorService instructorService;
     private StudentService studentService;
-
+    private AdminService adminService;
     private JTextField jTextField1;
     private JPasswordField jPasswordField1;
     private JButton jButton1, jButton2;
     private JLabel jLabel1, jLabel2, jLabel3, signUpLabel;
     private JPanel jPanel2;
-    public Login(UserService userService ,InstructorService instructorService,StudentService studentService,CourseService courseService ) {
+    public Login(UserService userService ,InstructorService instructorService,StudentService studentService,AdminService adminService,CourseService courseService ) {
        this.userService=userService;
        this.instructorService=instructorService;
        this.studentService=studentService;
        this.courseService=courseService;
+       this.adminService=adminService;
     initComponents();
     }
     private void initComponents() {
@@ -113,7 +115,13 @@ public class Login extends JFrame {
                         dispose();
                         StudentDashboard studentDashboard = new StudentDashboard(student, studentService, courseService);
                         studentDashboard.setVisible(true);
-                    } else {
+                    }
+                    else if (user instanceof Admin) {
+                        Admin admin = (Admin) user;
+                        dispose();
+                        AdminDashboard adminDashboard = new AdminDashboard(admin,adminService);
+                        adminDashboard.setVisible(true);
+                    }else {
                         throw new Exception("Invalid Username and Password");
                     }
                 }
