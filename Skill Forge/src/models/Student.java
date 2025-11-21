@@ -10,7 +10,10 @@ public class Student extends User {
     private List<Integer> coursesEnrolled;
     private Map<Integer, Map<Integer, Boolean>> progressMap;
 
-    public Student() {}
+    public Student() {
+        this.coursesEnrolled = new ArrayList<>();
+        this.progressMap = new HashMap<>();
+    }
 
     public Student(int id, String username, String pass, String email) {
         super("student", id, username, pass, email);

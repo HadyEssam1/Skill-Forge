@@ -294,52 +294,57 @@ public class StudentDashboard extends JFrame {
             }
         });
     }
-
-    // ---------------- Load Lessons ----------------
     private void loadLessons(int courseId) {
         DefaultTableModel model = (DefaultTableModel) lessonsTable.getModel();
         model.setRowCount(0);
-
         List<Lesson> lessons = courseService.viewLessons(courseId);
         for (Lesson l : lessons) {
             boolean completed = studentService.getLessonProgress(student.getUserId(),courseId,l.getLessonId());
             model.addRow(new Object[]{l.getLessonId(), l.getTitle(), completed});
         }
     }
-
-    // ---------------- Load Courses ----------------
     private void loadEnrolledCourses() {
+        try{
         DefaultTableModel model = (DefaultTableModel) enrolledTable.getModel();
         List<Course> enrolledCourses = studentService.viewEnrolledCourses(student.getUserId());
         model.setRowCount(0);
         for (Course c : enrolledCourses) {
             model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
+        }}
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void loadAvailableCourses() {
-        DefaultTableModel model = (DefaultTableModel) availableTable.getModel();
-        List<Course> availableCourses = studentService.viewAvailableCourses(student.getUserId());
-        model.setRowCount(0);
-        for (Course c : availableCourses) {
-            model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
-        }
-    }
-
-    // ---------------- Search  ----------------
-    private void searchEnrolledCourses() {
-        String keyword = txtSearchEnrolled.getText().trim();
-        DefaultTableModel model = (DefaultTableModel) enrolledTable.getModel();
-        model.setRowCount(0);
-        if (!keyword.isEmpty()) {
-            List<Course> results = studentService.searchEnrolledCourses(student.getUserId(),keyword);
-            for (Course c : results) {
+        try {
+            DefaultTableModel model = (DefaultTableModel) availableTable.getModel();
+            List<Course> availableCourses = studentService.viewAvailableCourses(student.getUserId());
+            model.setRowCount(0);
+            for (Course c : availableCourses) {
                 model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    private void searchEnrolledCourses() {
+        try {
+            String keyword = txtSearchEnrolled.getText().trim();
+            DefaultTableModel model = (DefaultTableModel) enrolledTable.getModel();
+            model.setRowCount(0);
+            if (!keyword.isEmpty()) {
+                List<Course> results = studentService.searchEnrolledCourses(student.getUserId(), keyword);
+                for (Course c : results) {
+                    model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     private void searchAvailableCourses() {
+        try{
         String keyword = txtSearchAvailable.getText().trim();
         DefaultTableModel model = (DefaultTableModel) availableTable.getModel();
         model.setRowCount(0);
@@ -349,7 +354,11 @@ public class StudentDashboard extends JFrame {
                 model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
             }
         }
-    }
+    }catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+        }}
     private void enrollSelectedCourse() {
         int selectedRow = availableTable.getSelectedRow();
         if (selectedRow != -1) {
@@ -359,6 +368,7 @@ public class StudentDashboard extends JFrame {
             int confirm = JOptionPane.showConfirmDialog(null,
                     "Are you sure you want to enroll in this course?");
             if (confirm == JOptionPane.YES_OPTION) {
+                try{
                 boolean success = studentService.enrollInCourse(student.getUserId(), courseId);
                 if (success) {
                     JOptionPane.showMessageDialog(null, "You have successfully enrolled in the course!");
@@ -367,6 +377,11 @@ public class StudentDashboard extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(null, "You are already enrolled in this course!");
                 }
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
             }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a course to enroll.");

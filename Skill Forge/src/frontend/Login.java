@@ -127,6 +127,7 @@ public class Login extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
+                System.exit(0);
             }
         });
         signUpLabel.addMouseListener(new MouseAdapter() {
@@ -134,7 +135,7 @@ public class Login extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 dispose();
-                SignupFrame Signup=new SignupFrame(userService);
+                SignupFrame Signup=new SignupFrame(userService,Login.this);
                 Signup.setVisible(true);
             }
         }

@@ -19,10 +19,9 @@ public class StudentService {
         this.courseManager = courseManager;
     }
 
-    public boolean enrollInCourse(int studentId, int courseId) {
+    public boolean enrollInCourse(int studentId, int courseId) throws Exception {
         Student st = (Student) userManager.getById(studentId);
         Course cr = courseManager.getById(courseId);
-
         if (st == null || cr == null) return false;
 
         cr.enrollStudent(st.getUserId());
@@ -33,7 +32,7 @@ public class StudentService {
         return true;
     }
 
-    public boolean dropCourse(int studentId, int courseId) {
+    public boolean dropCourse(int studentId, int courseId) throws Exception {
         Student st = (Student) userManager.getById(studentId);
         Course cr = courseManager.getById(courseId);
 
@@ -46,9 +45,10 @@ public class StudentService {
         return true;
     }
 
-    public List<Course> viewEnrolledCourses(int studentId) {
+    public List<Course> viewEnrolledCourses(int studentId) throws Exception {
         Student st = (Student) userManager.getById(studentId);
-        if (st == null) return null;
+        if (st == null)
+            throw new Exception("Student2 not Found ");
 
         List<Course> result = new ArrayList<>();
         for (int id : st.getCoursesEnrolled()) {
@@ -59,18 +59,19 @@ public class StudentService {
         return result;
     }
 
-    public List<Course> viewAvailableCourses(int studentId) {
+    public List<Course> viewAvailableCourses(int studentId) throws Exception {
         Student st = (Student) userManager.getById(studentId);
-        if (st == null) return null;
-
+        if (st == null)
+            throw new Exception("Student1 not Found ");
         List<Course> all = new ArrayList<>(courseManager.getAll());
         List<Integer> enrolledIds = st.getCoursesEnrolled();
-
         all.removeIf(c -> enrolledIds.contains(c.getCourseId()));
+        all.removeIf(c->c.getStatus()== Course.CourseStatus.PENDING);
+        all.removeIf(c->c.getStatus()== Course.CourseStatus.REJECTED);
         return all;
     }
 
-    public boolean setLessonProgress(int studentId, int courseId, int lessonId, boolean done) {
+    public boolean setLessonProgress(int studentId, int courseId, int lessonId, boolean done) throws Exception {
         Student st = (Student) userManager.getById(studentId);
         Course cr = courseManager.getById(courseId);
 
@@ -90,7 +91,7 @@ public class StudentService {
         return st.getLessonProgress(courseId, lessonId);
     }
 
-    public List<Course> searchEnrolledCourses(int studentId, String keyword) {
+    public List<Course> searchEnrolledCourses(int studentId, String keyword) throws Exception {
         List<Course> enrolled = viewEnrolledCourses(studentId);
         if (enrolled == null) return null;
 
@@ -107,7 +108,7 @@ public class StudentService {
         return result;
     }
 
-    public List<Course> searchAvailableCourses(int studentId, String keyword) {
+    public List<Course> searchAvailableCourses(int studentId, String keyword) throws Exception {
         List<Course> available = viewAvailableCourses(studentId);
         if (available == null) return null;
 

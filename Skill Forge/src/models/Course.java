@@ -8,7 +8,10 @@ public class Course {
     private String title;
     private String description;
     private int instructorId;
-
+    private CourseStatus status;
+    public enum CourseStatus{
+        PENDING, APPROVED, REJECTED
+    }
     private List<Lesson> lessons;
     private List<Integer> studentIds;
 
@@ -18,38 +21,56 @@ public class Course {
     }
 
     public Course(int courseId, String title, String description, int instructorId) {
-        validateCourse(courseId, title, instructorId);
-
+        validateCourseId(courseId);
+        validateTitle(title);
+        validateInstructorId(instructorId);
         this.courseId = courseId;
         this.title = title;
         this.description = description;
         this.instructorId = instructorId;
-
+        this.status=CourseStatus.PENDING;
         this.lessons = new ArrayList<>();
         this.studentIds = new ArrayList<>();
     }
-
-    public static void validateCourse(int courseId, String title, int instructorId){
+    private void validateCourseId(int courseId){
         if (courseId < 0)
-            throw new IllegalArgumentException("Course id must be positive number!");
-        if (title == null || title.isEmpty() || title.matches(".*\\d.*"))
-            throw new IllegalArgumentException("Invalid course title");
+            throw new IllegalArgumentException("Course ID must be a positive number!");
+    }
+    private void validateTitle(String title){
+        if (title == null || title.isEmpty())
+            throw new IllegalArgumentException("Invalid course title!");
+    }
+
+    private void validateInstructorId(int instructorId){
         if (instructorId < 0)
-            throw new IllegalArgumentException("Instructor id must be positive number!");
+            throw new IllegalArgumentException("Instructor ID must be a positive number!");
     }
 
     public int getCourseId(){ return courseId; }
     public String getTitle(){ return title; }
     public String getDescription(){ return description; }
     public int getInstructorId(){ return instructorId; }
-
     public List<Lesson> getLessons(){ return lessons; }
     public List<Integer> getStudentIds(){ return studentIds; }
 
-    public void setCourseId(int courseId){ this.courseId = courseId; }
-    public void setTitle(String title){ this.title = title; }
-    public void setDescription(String description){ this.description = description; }
-    public void setInstructorId(int instructorId){ this.instructorId = instructorId; }
+    public void setCourseId(int courseId){
+        validateCourseId(courseId);
+        this.courseId = courseId;
+    }
+
+    public void setTitle(String title){
+        validateTitle(title);
+        this.title = title;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+    public void setInstructorId(int instructorId){
+        validateInstructorId(instructorId);
+        this.instructorId = instructorId;
+    }
 
     public void addLesson(Lesson lesson){
         if (!lessons.contains(lesson)) {
@@ -75,8 +96,16 @@ public class Course {
             studentIds.add(studentId);
         }
     }
-
     public void removeStudent(int studentId) {
         studentIds.remove(Integer.valueOf(studentId));
     }
+
+    public CourseStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CourseStatus status) {
+        this.status = status;
+    }
+
 }

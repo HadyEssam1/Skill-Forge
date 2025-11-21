@@ -8,14 +8,18 @@ public class Main {
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
+            try {
             UserJsonManager userJsonManager = new UserJsonManager();
             CourseJsonManager courseJsonManager = new CourseJsonManager();
-            UserService userService = new UserService();
+            UserService userService = new UserService(userJsonManager);
             CourseService courseService = new CourseService(courseJsonManager);
             InstructorService instructorService = new InstructorService(courseJsonManager, userJsonManager);
             StudentService studentService = new StudentService(userJsonManager, courseJsonManager);
             Login loginFrame = new Login(userService, instructorService, studentService, courseService);
             loginFrame.setVisible(true);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }

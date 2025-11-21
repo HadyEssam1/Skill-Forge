@@ -18,14 +18,21 @@ public class InstructorService {
     }
 
     private int generateCourseId() {
-        return courseManager.getAll().size() + 1;
-    }
-
-    public Course createCourse(int instructorId, String title, String description) {
+        List<Course> courses = courseManager.getAll();
+        if (courses == null) {
+            return 1;
+        }
+        int maxId = 0;
+        for (Course c : courses) {
+            if (c.getCourseId() > maxId) {
+                maxId = c.getCourseId();
+            }
+        }
+        return maxId + 1;}
+    public Course createCourse(int instructorId, String title, String description) throws Exception {
         int newId = generateCourseId();
         Course c = new Course(newId, title, description, instructorId);
         courseManager.add(c);
-
         User u = userManager.getById(instructorId);
         if (u instanceof Instructor) {
             Instructor inst = (Instructor) u;
@@ -36,7 +43,7 @@ public class InstructorService {
         return c;
     }
 
-    public void editCourse(int courseId, String newTitle, String newDescription) {
+    public void editCourse(int courseId, String newTitle, String newDescription) throws Exception {
         Course c = courseManager.getById(courseId);
         if (c == null) return;
 
@@ -46,7 +53,7 @@ public class InstructorService {
         courseManager.save();
     }
 
-    public void deleteCourse(int instructorId, int courseId) {
+    public void deleteCourse(int instructorId, int courseId) throws Exception {
         Course c = courseManager.getById(courseId);
         if (c == null) return;
 
@@ -65,7 +72,7 @@ public class InstructorService {
         Course c = courseManager.getById(courseId);
         if (c == null)
             throw new Exception("Course is not exit");
-        int lessonId = c.getLessons().size() + 1;
+        int lessonId = generatelessonId(courseId);
         Lesson l = new Lesson(lessonId, title, content);
         c.addLesson(l);
         courseManager.save();
@@ -84,7 +91,7 @@ public class InstructorService {
         courseManager.save();
     }
 
-    public void deleteLesson(int courseId, int lessonId) {
+    public void deleteLesson(int courseId, int lessonId) throws Exception {
         Course c = courseManager.getById(courseId);
         if (c == null) return;
 
@@ -95,10 +102,7 @@ public class InstructorService {
 
     public List<Course> getInstructorCourses(int instructorId) {
         User u = userManager.getById(instructorId);
-        if (!(u instanceof Instructor)) return new ArrayList<>();
-
         Instructor inst = (Instructor) u;
-
         List<Course> result = new ArrayList<>();
         for (int id : inst.getCoursesTeaching()) {
             Course c = courseManager.getById(id);
@@ -122,5 +126,22 @@ public class InstructorService {
         }
 
         return result;
+    }
+    public int generatelessonId(int courseId) throws Exception {
+        Course c = courseManager.getById(courseId);
+        if (c == null)
+            throw new Exception("Course is not exit");
+        List<Lesson> lessons = c.getLessons();
+
+        if (lessons == null) {
+            return 1;
+        }
+        int maxId = 0;
+        for (Lesson lesson : lessons) {
+            if (lesson.getLessonId() > maxId) {
+                maxId = lesson.getLessonId();
+            }
+        }
+        return maxId + 1;
     }
 }

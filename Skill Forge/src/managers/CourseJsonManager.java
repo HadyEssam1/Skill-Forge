@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CourseJsonManager extends JsonManager<Course> {
 
-    public CourseJsonManager() {
+    public CourseJsonManager() throws Exception {
         super("data/courses.json", new TypeReference<List<Course>>() {});
     }
 
@@ -16,14 +16,5 @@ public class CourseJsonManager extends JsonManager<Course> {
                 return c;
         }
         return null;
-    }
-
-    public void update(Course updated) {
-        for (int i = 0; i < data.size(); i++) {
-            if (data.get(i).getCourseId() == updated.getCourseId()) {
-                data.set(i, updated);
-                save();
-            }
-        }
     }
 }

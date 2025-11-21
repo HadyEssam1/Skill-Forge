@@ -16,9 +16,10 @@ public class SignupFrame extends JFrame {
     private JComboBox<String> accountTypeCombo;
     private JButton btnSignup, btnCancel;
     private UserService userService;
-
-    public SignupFrame(UserService userService) {
+    private Login login;
+    public SignupFrame(UserService userService, Login login) {
         this.userService = userService;
+        this.login = login;
         initComponents();
     }
 
@@ -133,7 +134,9 @@ public class SignupFrame extends JFrame {
                 else {
                     User user = userService.signup(email, username, password, accountType);
                     if (user != null) {
-                        throw new Exception("Account created successfully!");
+                        JOptionPane.showMessageDialog(null,"Account created successfully!");
+                        dispose();
+                        login.setVisible(true);
                     } else {
                         throw new Exception( "Signup failed. Email may already exist.");
                     }
@@ -151,6 +154,7 @@ public class SignupFrame extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         dispose();
+                        login.setVisible(true);
                     }
                 }
         );

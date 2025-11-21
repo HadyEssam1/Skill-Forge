@@ -16,9 +16,8 @@ public class InstructorDashboard extends JFrame {
     private JPanel mainPanel, coursesPanel, courseInfoPanel, lessonsPanel, enrolledStudentsPanel, bottomPanel;
     private JPanel addCoursePanel, addLessonPanel;
     private JTable coursesTable, lessonsTable, studentsTable;
-    private JTextField txtCourseId, txtCourseTitle, txtCourseDesc,txtNewCourseId,txtNewCourseTitle;
-    private JTextField txtLessonId, txtLessonTitle;
-    private JTextArea txtLessonContent,txtNewCourseDesc;
+    private JTextField txtCourseId, txtCourseTitle, txtCourseDesc,txtNewCourseId,txtNewCourseTitle,txtNewLessonId,txtNewLessonTitle;
+    private JTextArea txtNewLessonContent,txtNewCourseDesc;
     private JButton btnAddCourse, btnEditCourse, btnDeleteCourse,btnCancelCourse,btnSaveCourse;
     private JButton btnAddLesson, btnEditLesson, btnDeleteLesson,btnSaveLesson,btnCancelLesson;
     private JButton btnViewLessons, btnCloseLessons;
@@ -47,13 +46,13 @@ public class InstructorDashboard extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
 
-        // ---------- Main Panel ----------
+        //Main Panel
         mainPanel = new JPanel(null);
         mainPanel.setBounds(0, 0, 1000, 550);
         mainPanel.setBackground(new Color(93, 109, 127));
         add(mainPanel);
 
-        // ---------- Courses Panel ----------
+        // Courses Panel
         coursesPanel = new JPanel(null);
         coursesPanel.setBounds(10, 10, 480, 400);
         coursesPanel.setBackground(new Color(65, 85, 95));
@@ -172,7 +171,7 @@ public class InstructorDashboard extends JFrame {
         btnCloseStudents.setBounds(620, 10, 120, 35);
         enrolledStudentsPanel.add(btnCloseStudents);
 
-        // ---------- Add Course Panel ----------
+        // Add Course Panel
         addCoursePanel = new JPanel(null);
         addCoursePanel.setBounds(10, 10, 970, 500);
         addCoursePanel.setBackground(new Color(75, 95, 110));
@@ -193,6 +192,7 @@ public class InstructorDashboard extends JFrame {
         txtNewCourseId = new JTextField();
         txtNewCourseId.setBounds(110, 50, 200, 25);
         addCoursePanel.add(txtNewCourseId);
+        txtNewCourseId.setEditable(false);
 
         JLabel lblNewCourseTitle = new JLabel("Title:");
         lblNewCourseTitle.setForeground(Color.WHITE);
@@ -220,7 +220,7 @@ public class InstructorDashboard extends JFrame {
         btnCancelCourse.setBounds(220, 250, 100, 35);
         addCoursePanel.add(btnCancelCourse);
 
-        // ---------- Add Lesson Panel ----------
+        // Add Lesson Panel
         addLessonPanel = new JPanel(null);
         addLessonPanel.setBounds(10, 10, 970, 500);
         addLessonPanel.setBackground(new Color(75, 95, 110));
@@ -238,8 +238,9 @@ public class InstructorDashboard extends JFrame {
         lblNewLessonId.setBounds(10, 50, 100, 25);
         addLessonPanel.add(lblNewLessonId);
 
-        JTextField txtNewLessonId = new JTextField();
+        txtNewLessonId = new JTextField();
         txtNewLessonId.setBounds(110, 50, 200, 25);
+        txtNewLessonId.setEditable(false);
         addLessonPanel.add(txtNewLessonId);
 
         JLabel lblNewLessonTitle = new JLabel("Title:");
@@ -247,7 +248,7 @@ public class InstructorDashboard extends JFrame {
         lblNewLessonTitle.setBounds(10, 90, 100, 25);
         addLessonPanel.add(lblNewLessonTitle);
 
-        JTextField txtNewLessonTitle = new JTextField();
+        txtNewLessonTitle = new JTextField();
         txtNewLessonTitle.setBounds(110, 90, 200, 25);
         addLessonPanel.add(txtNewLessonTitle);
 
@@ -256,7 +257,7 @@ public class InstructorDashboard extends JFrame {
         lblNewLessonContent.setBounds(10, 130, 100, 25);
         addLessonPanel.add(lblNewLessonContent);
 
-        JTextArea txtNewLessonContent = new JTextArea();
+        txtNewLessonContent = new JTextArea();
         txtNewLessonContent.setBounds(110, 130, 300, 200);
         addLessonPanel.add(txtNewLessonContent);
 
@@ -264,10 +265,10 @@ public class InstructorDashboard extends JFrame {
         btnSaveLesson.setBounds(110, 350, 100, 35);
         addLessonPanel.add(btnSaveLesson);
 
-         btnCancelLesson = new JButton("Cancel");
+        btnCancelLesson = new JButton("Cancel");
         btnCancelLesson.setBounds(220, 350, 100, 35);
         addLessonPanel.add(btnCancelLesson);
-// ---------- Edit Lesson Panel ----------
+// Edit Lesson Panel
         editLessonPanel = new JPanel(null);
         editLessonPanel.setBounds(10, 10, 970, 500);
         editLessonPanel.setBackground(new Color(75, 95, 110));
@@ -315,8 +316,7 @@ public class InstructorDashboard extends JFrame {
         btnCancelEditLesson = new JButton("Cancel");
         btnCancelEditLesson.setBounds(220, 350, 100, 35);
         editLessonPanel.add(btnCancelEditLesson);
-
-        // ---------- Bottom Panel ----------
+        // Bottom Panel
         bottomPanel = new JPanel(null);
         bottomPanel.setBounds(0, 415, 980, 60);
         bottomPanel.setBackground(new Color(65, 85, 95));
@@ -324,7 +324,7 @@ public class InstructorDashboard extends JFrame {
         btnLogout = new JButton("Logout");
         btnLogout.setBounds(200, 10, 120, 40);
         bottomPanel.add(btnLogout);
-        // ---------- Actions ----------
+        // Actions
         btnViewLessons.addActionListener(e -> {
            try{
             int selectedRow = coursesTable.getSelectedRow();
@@ -396,11 +396,12 @@ public class InstructorDashboard extends JFrame {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-        btnAddCourse.addActionListener(e -> showPanel(addCoursePanel));
+        btnAddCourse.addActionListener(e ->{showPanel(addCoursePanel);clearCourseFields();});
         btnCancelCourse.addActionListener(e -> showHome());
         btnSaveCourse.addActionListener(e -> addCourse());
         btnEditCourse.addActionListener(e->editCourse());
         btnAddLesson.addActionListener(e -> {
+            clearLessonFields();
             showPanel(addLessonPanel);
         });
         btnEditLesson.addActionListener(e -> editSelectedLesson());
@@ -412,19 +413,19 @@ public class InstructorDashboard extends JFrame {
                 fillCourseFields();            }
         });
         btnUpdateLesson.addActionListener(e -> updateLesson());
+        btnCancelEditLesson.addActionListener(e->showPanel(lessonsPanel));
     }
 
-    // ---------- Show Home ----------
     private void showHome() {
         coursesPanel.setVisible(true);
         courseInfoPanel.setVisible(true);
         lessonsPanel.setVisible(false);
+        editLessonPanel.setVisible(false);
         enrolledStudentsPanel.setVisible(false);
         addCoursePanel.setVisible(false);
         addLessonPanel.setVisible(false);
         bottomPanel.setVisible(true);
     }
-    // ---------- Show any other panel ----------
     private void showPanel(JPanel panelToShow) {
         coursesPanel.setVisible(false);
         courseInfoPanel.setVisible(false);
@@ -432,6 +433,7 @@ public class InstructorDashboard extends JFrame {
         enrolledStudentsPanel.setVisible(false);
         addCoursePanel.setVisible(false);
         addLessonPanel.setVisible(false);
+        editLessonPanel.setVisible(false);
         bottomPanel.setVisible(panelToShow == coursesPanel || panelToShow == courseInfoPanel);
         panelToShow.setVisible(true);
     }
@@ -553,7 +555,6 @@ public class InstructorDashboard extends JFrame {
             }
 
             int lessonId = Integer.parseInt(lessonsTable.getValueAt(selectedLessonRow, 0).toString());
-            int courseId = Integer.parseInt(coursesTable.getValueAt(selectedCourseRow, 0).toString());
             String oldTitle = lessonsTable.getValueAt(selectedLessonRow, 1).toString();
             String oldContent = lessonsTable.getValueAt(selectedLessonRow, 2).toString();
 
@@ -585,12 +586,19 @@ public class InstructorDashboard extends JFrame {
             instructorService.editLesson(courseId, lessonId, newTitle, newContent);
             JOptionPane.showMessageDialog(this, "Lesson updated successfully!");
             loadLessons(courseId);
-            editLessonPanel.setVisible(false);
             showPanel(lessonsPanel);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }
-
-
+    public void clearLessonFields() {
+        txtNewLessonId.setText("");
+        txtNewLessonTitle.setText("");
+        txtNewLessonContent.setText("");
+    }
+    public void clearCourseFields() {
+        txtNewCourseId.setText("");
+        txtNewCourseTitle.setText("");
+        txtNewCourseDesc.setText("");
+    }
 }
