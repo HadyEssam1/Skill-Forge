@@ -25,7 +25,7 @@ public class Question {
     }
 
     private void validateQuestionNum(int questionNum){
-        if (questionNum < 0)
+        if (questionNum < 1)
             throw new IllegalArgumentException("question number  must be a positive number!");
         }
 
@@ -33,8 +33,8 @@ public class Question {
         if (text == null || text.isEmpty())
             throw new IllegalArgumentException("this text cannot be empty!!");}
 
-    private void validateCorrectAnsIndex(int correctAnsIndex){
-        if (correctAnsIndex<0||correctAnsIndex>(choices.size()-1))
+    protected void validateAnsIndex(int ansIndex){
+        if (ansIndex<0||ansIndex>=(choices.size()))
             throw new IllegalArgumentException("correct answer must be one of teh choices!!");
     }
 
@@ -51,12 +51,12 @@ public class Question {
         this.text=text;
     }
     public void setCorrectAnsIndex(int index){
-        validateCorrectAnsIndex(index);
+        validateAnsIndex(index);
         this.correctAnsIndex=index;
     }
     public void addChoice(String choice){
         validateText(choice);
-        choices.add(choices.size(),choice);
+        choices.add(choice);
     }
 
     public String getChoice(int index){return choices.get(index);}

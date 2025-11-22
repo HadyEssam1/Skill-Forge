@@ -33,9 +33,11 @@ public class Quiz {
     private void validatePassMark(int passMark){
         if (passMark < 0||passMark>100)
             throw new IllegalArgumentException("pass mark must be more than 0 less than 100!");}
+
     public int getQuizId(){return quizId;}
     public int getPassMark(){return passMark;}
     public Question getQuestion(int questionNum){return questions.get(questionNum);}
+    public Map<Integer,Question> getQuestions(){return questions;}
 
     public void setQuizId(int quizId){
         validateQuizId(quizId);
@@ -52,7 +54,7 @@ public class Quiz {
     }
     public void removeQuestionFrom(int questionNum){
         if(!questions.containsKey(questionNum)){
-          throw new IllegalArgumentException("question number"+questionNum +"does'nt exist!!");  
+          throw new IllegalArgumentException("question number"+questionNum +"doesn't exist!!");  
         }
         questions.remove(questionNum);
     }
