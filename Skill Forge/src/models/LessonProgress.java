@@ -1,20 +1,18 @@
 package models;
 
 public class LessonProgress {
-    private Lesson lesson;
     private int lessonId;
     private int attempts;
     private Integer quizScore;          // to be null and not equal any number
     private boolean completed;
     private boolean passed;
 
-    public LessonProgress(Lesson lesson, int lessonId, int attempts, Integer quizScore, boolean completed, boolean passed) {
-        this.lesson = lesson;
+    public LessonProgress(int lessonId) {
         this.lessonId = lessonId;
-        this.attempts = attempts;
-        this.quizScore = quizScore;
-        this.completed = completed;
-        this.passed = passed;
+        this.attempts = 0;
+        this.quizScore = null;
+        this.completed = false;
+        this.passed = false;
     }
 
     public int getLessonId() {
@@ -72,9 +70,13 @@ public class LessonProgress {
             this.passed = true;
             this.completed = true;
         }
+        else{
+            this.passed=false;
+            this.completed=false;
+        }
     }
 
-    public void resetProgress(int score){
+    public void resetProgress(){
         this.quizScore=null;
         this.attempts=0;
         this.passed=false;
