@@ -11,7 +11,13 @@ public class Quiz {
     private int courseId;
     private int passMark;
     private Map<Integer,Question> questions;
-    public Quiz(int quizId,int lessonId,int courseId,int passMark){
+    private static int prevQuizId=0;
+
+    public static int generateUniqueQuizId(){
+        prevQuizId++;
+        return prevQuizId;
+    }
+    public Quiz(int lessonId,int courseId,int passMark){
         validateQuizId(quizId);
         validateLessonId(lessonId);
         validatePassMark(passMark);
@@ -67,5 +73,6 @@ public class Quiz {
     public int getCourseId() {
         return courseId;
     }
+
 }
 
