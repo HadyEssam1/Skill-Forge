@@ -23,11 +23,9 @@ public class CertificateService {
         this.courseService = courseService;
         this.studentService = studentService;
     }
-
     private LocalDateTime generateIssueDate() {
         return LocalDateTime.now();
     }
-
     private String generateCertificateID() {
         return UUID.randomUUID().toString();
     }
@@ -52,10 +50,9 @@ public class CertificateService {
 
         return true;
     }
-    public Certificate courseCompletion(Student student, Course course) throws Exception {
-
-        int courseId = course.getCourseId();
-
+    public Certificate courseCompletion(int studentId, int  courseId) throws Exception {
+        Student student=(Student) userManager.getById(studentId);
+        Course course=courseManager.getById(courseId);
         boolean duplicated = student.getEarnedCertificates()
                 .stream()
                 .anyMatch(c -> c.getCourseID() == courseId);
@@ -66,7 +63,6 @@ public class CertificateService {
         }
         String certId = generateCertificateID();
         LocalDateTime date = generateIssueDate();
-
         Certificate cert = new Certificate(
                 certId,
                 date,
