@@ -17,7 +17,7 @@ public class UserJsonManager extends JsonManager<User> {
         super("data/users.json", null);
     }
     @Override
-    public final void load() throws Exception {
+    public final List<User> load() throws Exception {
         try {
             File file= new File(filePath);
             if(!file.exists())
@@ -55,6 +55,7 @@ public class UserJsonManager extends JsonManager<User> {
             throw new Exception("error : Loading File");
 
         }
+        return null;
     }
     public User getById(int id) {
         for (User u : data) {

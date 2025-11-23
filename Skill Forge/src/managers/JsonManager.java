@@ -20,7 +20,7 @@ public abstract class JsonManager<T> {
         load();
     }
 
-    public void load() throws Exception {
+    public List<T> load() throws Exception {
         try {
          File file= new File(filePath);
          if(!file.exists())
@@ -37,6 +37,7 @@ public abstract class JsonManager<T> {
         } catch (Exception e) {
             throw new Exception("error : Loading File");
         }
+        return null;
     }
 
     public final void save() throws Exception {
@@ -58,5 +59,23 @@ public abstract class JsonManager<T> {
 
     public void delete(T obj) {
         data.remove(obj);
+    }
+    protected abstract String getEntityId(T entity);
+
+    public void update(T entityToUpdate) throws Exception {
+        boolean found=false;
+        for (int i=0;i<this.data.size();i++) {
+            if (getEntityId(this.data.get(i)).equals(getEntityId(entityToUpdate))) {
+                this.data.set(i,entityToUpdate);
+                found=true;
+                break;
+            }
+        }
+        if (found){
+            save();
+        }
+        else{
+            throw new Exception("Error: Entity not found for update.");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package models;
 
+import java.security.cert.Certificate;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -9,6 +10,8 @@ public class Course {
     private String description;
     private int instructorId;
     private CourseStatus status;
+    private List<Certificate> earnedCertificates;
+    private List<Integer> requiredQuizIds;
     public enum CourseStatus{
         PENDING, APPROVED, REJECTED
     }
@@ -18,6 +21,8 @@ public class Course {
     public Course() {
         this.lessons = new ArrayList<>();
         this.studentIds = new ArrayList<>();
+        this.earnedCertificates=new ArrayList<>();
+        this.requiredQuizIds=new ArrayList<>();
     }
 
     public Course(int courseId, String title, String description, int instructorId) {
@@ -31,6 +36,12 @@ public class Course {
         this.status=CourseStatus.PENDING;
         this.lessons = new ArrayList<>();
         this.studentIds = new ArrayList<>();
+        this.earnedCertificates=new ArrayList<>();
+        this.requiredQuizIds=new ArrayList<>();
+    }
+    public List<Integer> getRequiredQuizIds(){return new ArrayList<>(requiredQuizIds);}
+    public List<Certificate> getEarnedCertificates(){
+        return new ArrayList<>(earnedCertificates);
     }
     private void validateCourseId(int courseId){
         if (courseId < 0)
