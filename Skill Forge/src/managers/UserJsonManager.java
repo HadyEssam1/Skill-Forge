@@ -52,7 +52,7 @@ public class UserJsonManager extends JsonManager<User> {
         }}
         catch (Exception e)
         {
-            throw new Exception("error : Loading File");
+            throw new Exception("Error parsing JSON file: " + filePath + "\n" + e.getMessage());
 
         }
         return null;

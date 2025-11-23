@@ -9,6 +9,9 @@ public class Instructor extends User {
         super("instructor", id, username, pass, email);
         this.coursesTeaching = new ArrayList<>();
     }
+    public Instructor(){
+        this.coursesTeaching = new ArrayList<>();
+    }
     public List<Integer> getCoursesTeaching() {
         return new ArrayList<>(coursesTeaching);
     }
