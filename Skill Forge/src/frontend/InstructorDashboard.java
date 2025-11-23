@@ -20,7 +20,7 @@ public class InstructorDashboard extends JFrame {
     private JTextArea txtNewLessonContent,txtNewCourseDesc;
     private JTextArea txtChoice1,txtChoice2,txtChoice3,txtChoice4,txtQuestion;
     private JButton btnAddCourse, btnEditCourse, btnDeleteCourse,btnCancelCourse,btnSaveCourse;
-    private JButton btnAddLesson, btnEditLesson, btnDeleteLesson,btnSaveLesson,btnCancelLesson,btnCreateQuiz;
+    private JButton btnAddLesson, btnEditLesson, btnDeleteLesson,btnSaveLesson,btnCancelLesson,btnCreateQuiz,btnRemoveQuiz;
     private JButton btnContinueQuiz,btnCancelQuiz;
     private JButton btnAddQuestion,btnClearQuestion,btnFinishQuiz;
     private JButton btnViewLessons, btnCloseLessons;
@@ -161,10 +161,13 @@ public class InstructorDashboard extends JFrame {
         btnCloseLessons.setBounds(620, 160, 120, 35);
         lessonsPanel.add(btnCloseLessons);
 
-        btnCreateQuiz = new JButton("Close Lessons");
+        btnCreateQuiz = new JButton("Create Quiz");
         btnCreateQuiz.setBounds(620, 210, 120, 35);
         lessonsPanel.add(btnCreateQuiz);
 
+        btnRemoveQuiz = new JButton("Remove Quiz");
+        btnRemoveQuiz.setBounds(620, 260, 120, 35);
+        lessonsPanel.add(btnRemoveQuiz);
 
         //Enrolled Students Panel
         enrolledStudentsPanel = new JPanel(null);
@@ -469,7 +472,15 @@ public class InstructorDashboard extends JFrame {
             }
         });
         btnCloseLessons.addActionListener(e -> showHome());
-        btnCreateQuiz.addActionListener(e->{showPanel(createQuizFrom));
+        btnCreateQuiz.addActionListener(e->showPanel(createQuizFrom));
+        btnRemoveQuiz.addActionListener(e->{
+        int selectedLessonRow = lessonsTable.getSelectedRow();
+        if (selectedLessonRow == -1) {
+        throw new Exception("Please select a lesson first.");
+        int lessonId = Integer.parseInt(lessonsTable.getValueAt(selectedRow, 0).toString());
+        Lesson lesson = c.getLessonById(lessonId);
+        lesson.removeQuiz();
+        });
         btnSaveLesson.addActionListener(e -> {
             try {
                 int selectedRow = coursesTable.getSelectedRow();
