@@ -2,6 +2,7 @@ package managers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.User;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public abstract class JsonManager<T> {
         load();
     }
 
-    public List<T> load() throws Exception {
+    public ArrayList<User> load() throws Exception {
         try {
          File file= new File(filePath);
          if(!file.exists())
@@ -59,23 +60,5 @@ public abstract class JsonManager<T> {
 
     public void delete(T obj) {
         data.remove(obj);
-    }
-    protected abstract String getEntityId(T entity);
-
-    public void update(T entityToUpdate) throws Exception {
-        boolean found=false;
-        for (int i=0;i<this.data.size();i++) {
-            if (getEntityId(this.data.get(i)).equals(getEntityId(entityToUpdate))) {
-                this.data.set(i,entityToUpdate);
-                found=true;
-                break;
-            }
-        }
-        if (found){
-            save();
-        }
-        else{
-            throw new Exception("Error: Entity not found for update.");
-        }
     }
 }

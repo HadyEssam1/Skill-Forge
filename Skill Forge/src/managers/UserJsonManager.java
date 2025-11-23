@@ -17,7 +17,7 @@ public class UserJsonManager extends JsonManager<User> {
         super("data/users.json", null);
     }
     @Override
-    public final List<User> load() throws Exception {
+    public final ArrayList<User> load() throws Exception {
         try {
             File file= new File(filePath);
             if(!file.exists())

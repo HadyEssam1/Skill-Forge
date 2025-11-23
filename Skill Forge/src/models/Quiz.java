@@ -8,16 +8,16 @@ import java.util.LinkedHashMap;
 public class Quiz {
     private int quizId;
     private int lessonId;
+    private int courseId;
     private int passMark;
     private Map<Integer,Question> questions;
-
-    public Quiz(int quizId,int lessonId,int passMark){
+    public Quiz(int quizId,int lessonId,int courseId,int passMark){
         validateQuizId(quizId);
         validateLessonId(lessonId);
         validatePassMark(passMark);
-
         this.quizId=quizId;
         this.lessonId=lessonId;
+        this.courseId=courseId;
         this.passMark=passMark;
         this.questions=new LinkedHashMap<>();//order is important.
 
@@ -59,6 +59,13 @@ public class Quiz {
         questions.remove(questionNum);
     }
     public int getTotalQ(){return questions.size();}
-    
+
+    public int getLessonId() {
+        return lessonId;
+    }
+
+    public int getCourseId() {
+        return courseId;
+    }
 }
 

@@ -58,7 +58,8 @@ public class Lesson {
     }
     public Quiz getQuiz(){return quiz;}
     public void setQuiz(Quiz quiz){
-        if(quiz==null){throw new IllegalArgumentException("quiz cannot be null");}
+        if(quiz==null)
+        {throw new IllegalArgumentException("quiz cannot be null");}
         if (quiz.getLessonId()!= lessonId){throw new IllegalArgumentException("this quiz does not belong to this lesson!!");}
         this.quiz=quiz;
     }
@@ -82,5 +83,4 @@ public class Lesson {
         if (content == null || content.trim().isEmpty())
             throw new IllegalArgumentException("Lesson content cannot be empty.");
     }
-    
 }

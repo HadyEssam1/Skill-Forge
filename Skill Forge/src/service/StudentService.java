@@ -25,7 +25,6 @@ public class StudentService {
 
         cr.enrollStudent(st.getUserId());
         st.addCourse(courseId);
-
         courseManager.save();
         userManager.save();
         return true;
@@ -43,7 +42,6 @@ public class StudentService {
         userManager.save();
         return true;
     }
-
     public List<Course> viewEnrolledCourses(int studentId) throws Exception {
         Student st = (Student) userManager.getById(studentId);
         if (st == null)
@@ -57,7 +55,6 @@ public class StudentService {
 
         return result;
     }
-
     public List<Course> viewAvailableCourses(int studentId) throws Exception {
         Student st = (Student) userManager.getById(studentId);
         if (st == null)
@@ -136,6 +133,11 @@ public class StudentService {
         }
         attempt.calcScore(quiz);
         st.addQuizAttempt(quiz.getQuizId(), attempt);
+        if (attempt.isPassed()) {
+            int lessonId = quiz.getLessonId();
+            int courseId = quiz.getCourseId();
+            st.setLessonProgress(courseId, lessonId, true);
+        }
         userManager.save();
         return attempt;
     }

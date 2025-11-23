@@ -10,7 +10,6 @@ import java.util.List;
 public class CourseService {
 
     private final CourseJsonManager courseManager;
-
     public CourseService(CourseJsonManager courseManager) {
         this.courseManager = courseManager;
     }
@@ -50,4 +49,17 @@ public class CourseService {
         }
         return null;
     }
+    public Integer getQuizIdByLesson(int courseId, int lessonId) throws Exception {
+        Course c = courseManager.getById(courseId);
+        if (c == null) throw new Exception("Course not found");
+
+        Lesson lesson = c.getLessonById(lessonId);
+        if (lesson == null) throw new Exception("Lesson not found");
+
+        if (lesson.getQuiz() == null)
+            throw new Exception("Lesson has no quiz");
+
+        return lesson.getQuiz().getQuizId();
+    }
+
 }

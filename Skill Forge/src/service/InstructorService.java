@@ -73,7 +73,7 @@ public class InstructorService {
         if (c == null)
             throw new Exception("Course is not exit");
         int lessonId = generatelessonId(courseId);
-        Lesson l = new Lesson(lessonId, title, content);
+        Lesson l = new Lesson(lessonId,courseId ,title, content);
         c.addLesson(l);
         courseManager.save();
     }
@@ -144,4 +144,57 @@ public class InstructorService {
         }
         return maxId + 1;
     }
+    public void createQuizForLesson(int courseId, int lessonId, int quizId, int passMark) throws Exception {
+
+        // Validate quizId
+        if (quizId < 0)
+            throw new IllegalArgumentException("quizId cannot be negative number");
+
+        // Validate passMark
+        if (passMark < 0 || passMark > 100)
+            throw new IllegalArgumentException("passMark must be between 0 and 100");
+
+        // Get course
+        Course c = courseManager.getById(courseId);
+        if (c == null)
+            throw new IllegalArgumentException("Course not found");
+
+        // Ensure instructor owns this course
+        User u = userManager.getById(c.getInstructorId());
+        if (!(u instanceof Instructor))
+            throw new IllegalArgumentException("Instructor not found");
+
+        Instructor inst = (Instructor) u;
+        if (!inst.getCoursesTeaching().contains(courseId))
+            throw new IllegalArgumentException("Unauthorized to create quiz for this course");
+
+        // Get lesson
+        Lesson lesson = c.getLessonById(lessonId);
+        if (lesson == null)
+            throw new IllegalArgumentException("Lesson not found");
+
+        // Create quiz (correct constructor)
+        Quiz quiz = new Quiz(quizId, lessonId, courseId, passMark);
+        // Assign to lesson
+        lesson.setQuiz(quiz);
+        courseManager.save();
+    }
+
+    public void removeQuizFromLesson(int instructorId, int courseId, int lessonId) throws Exception {
+        Course c = courseManager.getById(courseId);
+        if (c == null)
+            throw new IllegalArgumentException("Course not found");
+        Lesson lesson = c.getLessonById(lessonId);
+        if (lesson == null)
+            throw new IllegalArgumentException("Lesson not found");
+        User u = userManager.getById(instructorId);
+        if (!(u instanceof Instructor))
+            throw new IllegalArgumentException("Instructor not found");
+        Instructor inst = (Instructor) u;
+        if (!inst.getCoursesTeaching().contains(courseId))
+            throw new IllegalArgumentException("Unauthorized attempt to remove quiz!");
+        lesson.removeQuiz();
+        courseManager.save();
+    }
+
 }

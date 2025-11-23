@@ -1,21 +1,23 @@
 package service;
 import managers.CourseJsonManager;
 import managers.UserJsonManager;
-import models.Course;
-import models.Lesson;
-import models.Student;
-import models.User;
+import models.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Analytics {
-
     private CourseJsonManager courseManager;
     private UserJsonManager userManager;
-
-    public Analytics() throws Exception {
+    private CourseService courseService;
+    private StudentService studentService;
+    public Analytics(CourseJsonManager courseManager,UserJsonManager userManager,CourseService courseService,StudentService studentService) throws Exception {
+        this.courseManager=courseManager;
+        this.userManager=userManager;
+        this.courseService=courseService;
+        this.studentService=studentService;
     }
 
 
@@ -32,8 +34,9 @@ public class Analytics {
         for (Integer sid : studentIds) {
             for (User u : users) {
                 if (u.getUserId() == sid && u instanceof Student s) {
-
-                    Integer score = s.getQuizScore(courseId, lessonId);
+                    int quizId= courseService.getQuizIdByLesson(courseId,lessonId);
+                    QuizAttempt best = studentService.getBestAttempt(s.getUserId(), quizId);
+                    Integer score = best.getScore();
                     if (score != null) {
                         sum += score;
                         count++;
@@ -47,7 +50,6 @@ public class Analytics {
     public double getCourseCompletionRate(int courseId) throws Exception {
         Course course = courseManager.getById(courseId);
         if (course == null) return 0;
-
         List<Integer> studentIds = course.getStudentIds();
         List<Lesson> lessons = course.getLessons();
 
@@ -63,7 +65,7 @@ public class Analytics {
             for (User u : users) {
                 if (u.getUserId() == studentId && u instanceof Student s) {
                     for (Lesson lesson : lessons) {
-                        if (s.hasCompletedLesson(courseId, lesson.getLessonId())) {
+                        if (s.getLessonProgress(courseId, lesson.getLessonId())) {
                             totalCompleted++;
                         }
                     }
@@ -93,7 +95,7 @@ public class Analytics {
 
                     int completed = 0;
                     for (Lesson lesson : lessons) {
-                        if (s.hasCompletedLesson(courseId, lesson.getLessonId())) {
+                        if (s.getLessonProgress(courseId, lesson.getLessonId())) {
                             completed++;
                         }
                     }

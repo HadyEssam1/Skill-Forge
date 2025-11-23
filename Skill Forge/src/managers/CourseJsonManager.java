@@ -5,7 +5,6 @@ import models.Course;
 import java.util.List;
 
 public class CourseJsonManager extends JsonManager<Course> {
-
     public CourseJsonManager() throws Exception {
         super("data/courses.json", new TypeReference<List<Course>>() {});
     }
