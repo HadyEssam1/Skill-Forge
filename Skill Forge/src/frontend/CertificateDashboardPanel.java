@@ -14,6 +14,10 @@ public class CertificateDashboardPanel extends JPanel {
     private final Certificate certificate;
     private final Course course;
 
+    public interface CourseLookupService {
+        Course getCourse(String courseId);
+    }
+
     public CertificateDashboardPanel(Certificate certificate,Course course,ActionListener downloadListener) {
         this.certificate=certificate;
         this.course =course;
