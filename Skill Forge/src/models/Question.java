@@ -15,7 +15,6 @@ public class Question {
 
     public Question(int questionNum,int quizId,String text){
         validateQuestionNum(questionNum);
-        validateQuizId(quizId);
         validateText(text);
 
         this.questionNum=questionNum;

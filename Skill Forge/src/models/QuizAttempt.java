@@ -7,15 +7,14 @@ import java.util.LinkedHashMap;
 import java.time.LocalDateTime;
 
 public class QuizAttempt {
-    private Quiz quiz;
+    private int quizId;
     private LocalDateTime attemptDate;
     private int score;
     private boolean passed;
     private Map <Integer,Integer> answers;
 
-    public QuizAttempt(Quiz quiz){
-        validateQuiz(quiz);
-        this.quiz=quiz;
+    public QuizAttempt(int quizId){
+        this.quizId=quizId;
         this.attemptDate=LocalDateTime.now();
         this.score=0;
         this.passed=false;
@@ -31,7 +30,7 @@ public class QuizAttempt {
     public Map<Integer,Integer> getAnswers(){return answers;}
     public Integer getAnswer(int questionNum){return answers.get(questionNum);}
 
-    public void addAnswer(int questionNum,int ans){
+    public void addAnswer(int questionNum,int ans,Quiz quiz){
         Question q=quiz.getQuestions().get(questionNum);
         if (q==null){
             throw new IllegalArgumentException("there is no question number:"+questionNum);
@@ -39,7 +38,7 @@ public class QuizAttempt {
         q.validateAnsIndex(ans);
         answers.put(questionNum,ans);
     }
-    public int getTotalCorrect(){
+    public int getTotalCorrect(Quiz quiz){
         int correct=0;
         for(Question q : quiz.getQuestions().values()){
             Integer ans=getAnswer(q.getQuestionNum());
@@ -50,16 +49,14 @@ public class QuizAttempt {
         }
             return correct;
     }
-    public void calcScore(){
-        int correct=getTotalCorrect();
+    public void calcScore(Quiz quiz){
+        int correct=getTotalCorrect(quiz);
         int total=quiz.getQuestions().size();
         score=(100*correct)/total;
 
         passed=(score>=quiz.getPassMark());
     }
     public boolean isPassed(){return passed;}
-    
-
     }
 
 

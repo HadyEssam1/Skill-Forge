@@ -14,7 +14,7 @@ public class Main {
             UserService userService = new UserService(userJsonManager);
             CourseService courseService = new CourseService(courseJsonManager);
             InstructorService instructorService = new InstructorService(courseJsonManager, userJsonManager);
-            StudentService studentService = new StudentService(userJsonManager, courseJsonManager);
+            StudentService studentService = new StudentService(userJsonManager, courseJsonManager,courseService);
             AdminService adminService=new AdminService(courseJsonManager,userJsonManager);
             Login loginFrame = new Login(userService, instructorService, studentService,adminService,courseService);
             loginFrame.setVisible(true);

@@ -3,6 +3,7 @@ package service;
 import managers.CourseJsonManager;
 import models.Course;
 import models.Lesson;
+import models.Quiz;
 
 import java.util.List;
 
@@ -33,6 +34,18 @@ public class CourseService {
         for (Lesson lesson : c.getLessons()) {
             if (lesson.getLessonId() == lessonId) {
                 return lesson;
+            }
+        }
+        return null;
+    }
+    public Quiz getQuizById(int quizId) throws Exception {
+        List<Course> courses = courseManager.getAll();
+        for (Course c : courses) {
+            for (Lesson l : c.getLessons()) {
+                Quiz q = l.getQuiz();
+                if (q != null && q.getQuizId() == quizId) {
+                    return q;
+                }
             }
         }
         return null;

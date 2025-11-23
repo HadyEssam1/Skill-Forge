@@ -2,21 +2,20 @@ package service;
 
 import managers.UserJsonManager;
 import managers.CourseJsonManager;
-import models.Student;
-import models.Course;
-import models.Lesson;
+import models.*;
 
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.Map;
 public class StudentService {
 
     private UserJsonManager userManager;
     private CourseJsonManager courseManager;
-
-    public StudentService(UserJsonManager userManager, CourseJsonManager courseManager) {
+    private CourseService courseService;
+    public StudentService(UserJsonManager userManager, CourseJsonManager courseManager,CourseService courseService) {
         this.userManager = userManager;
         this.courseManager = courseManager;
+        this.courseService=courseService;
     }
 
     public boolean enrollInCourse(int studentId, int courseId) throws Exception {
@@ -107,7 +106,6 @@ public class StudentService {
 
         return result;
     }
-
     public List<Course> searchAvailableCourses(int studentId, String keyword) throws Exception {
         List<Course> available = viewAvailableCourses(studentId);
         if (available == null) return null;
@@ -123,5 +121,43 @@ public class StudentService {
         }
 
         return result;
+    }
+    public QuizAttempt takeQuiz(int studentId, int quizId, Map<Integer,Integer> answers) throws Exception {
+        Student st = (Student) userManager.getById(studentId);
+        if (st == null)
+            throw new IllegalArgumentException("Student not found.");
+        Quiz quiz = courseService.getQuizById(quizId);
+        if (quiz == null)
+            throw new IllegalArgumentException("Quiz not found!");
+        QuizAttempt attempt = new QuizAttempt(quizId);
+
+        for (Map.Entry<Integer,Integer> entry : answers.entrySet()) {
+            attempt.addAnswer(entry.getKey(), entry.getValue(), quiz);
+        }
+        attempt.calcScore(quiz);
+        st.addQuizAttempt(quiz.getQuizId(), attempt);
+        userManager.save();
+        return attempt;
+    }
+
+    public QuizAttempt getBestAttempt(int studentId,int quizId){
+        Student st = (Student) userManager.getById(studentId);
+        if (st == null)
+            throw new IllegalArgumentException("Student not found.");
+        List<QuizAttempt> attempts=st.getAllQuizAttempts(quizId);
+        if (attempts == null || attempts.isEmpty())
+            return null;
+        QuizAttempt best= attempts.get(0);
+        for (QuizAttempt a: attempts){
+            if (a.getScore() > best.getScore()){
+                best=a;
+            }
+        }
+        return best;
+    }
+    public boolean hasPassed(int studentId,int quizId){
+        QuizAttempt best = getBestAttempt(studentId,quizId);
+        if (best == null) return false;
+        return best.isPassed();
     }
 }
