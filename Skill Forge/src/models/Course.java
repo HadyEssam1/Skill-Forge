@@ -10,8 +10,12 @@ public class Course {
     private String description;
     private int instructorId;
     private CourseStatus status;
+<<<<<<< HEAD
     private List<Certificate> earnedCertificates;
     private List<Integer> requiredQuizIds;
+=======
+
+>>>>>>> 7f7bf2a3d2ed3d6c928526ca216b1bfd9c8aac57
     public enum CourseStatus{
         PENDING, APPROVED, REJECTED
     }
@@ -61,7 +65,7 @@ public class Course {
     public String getTitle(){ return title; }
     public String getDescription(){ return description; }
     public int getInstructorId(){ return instructorId; }
-    public List<Lesson> getLessons(){ return lessons; }
+    public List<Lesson> getLessons(){ return new ArrayList<>(lessons); }
     public List<Integer> getStudentIds(){ return studentIds; }
 
     public void setCourseId(int courseId){
