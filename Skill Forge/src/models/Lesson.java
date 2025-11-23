@@ -8,6 +8,7 @@ public class Lesson {
     private String title;
     private String content;
     private List<String> resources;
+    private Quiz quiz;
 
     public Lesson() {}
 
@@ -19,6 +20,7 @@ public class Lesson {
         this.title = title;
         this.content = content;
         this.resources = new ArrayList<>();
+        this.quiz=null;
     }
 
     public int getLessonId() { return lessonId; }
@@ -50,6 +52,13 @@ public class Lesson {
         else
             this.resources = resources;
     }
+    public Quiz getQuiz(){return quiz;}
+    public void setQuiz(Quiz quiz){
+        if(quiz==null){throw new IllegalArgumentException("quiz cannot be null");}
+        if (quiz.getLessonId()!= lessonId){throw new IllegalArgumentException("this quiz does not belong to this lesson!!");}
+        this quiz=quiz;
+    }
+    public removeQuiz(){this.quiz=null;}
 
     private void validateId(int lessonId) {
         if (lessonId <= 0)
@@ -65,4 +74,5 @@ public class Lesson {
         if (content == null || content.trim().isEmpty())
             throw new IllegalArgumentException("Lesson content cannot be empty.");
     }
+    
 }

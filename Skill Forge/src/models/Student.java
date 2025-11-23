@@ -9,10 +9,13 @@ public class Student extends User {
 
     private List<Integer> coursesEnrolled;
     private Map<Integer, Map<Integer, Boolean>> progressMap;
+    private Map<Integer,List<QuizAttempts>> quizAttempts;
 
     public Student() {
         this.coursesEnrolled = new ArrayList<>();
         this.progressMap = new HashMap<>();
+        this.quizAttempts = new HashMap<>();
+
     }
 
     public Student(int id, String username, String pass, String email) {
@@ -53,4 +56,37 @@ public class Student extends User {
     public Map<Integer, Map<Integer, Boolean>> getProgressMap() {
         return progressMap;
     }
+    public QuizAttempt takeQuiz(Quiz quiz){
+        if (quiz==null){
+            throw new IllegalArgumentException("this quiz doesn't exist!");
+        }
+        QuizAttempt attempt=new QuizAttempt(quiz);
+
+        List<QuizAttempt> prevAttempts=quizAttempts.get(quiz.getQuizId());
+        if (prevAttempts==null){
+            prevAttempts=new ArrayList<>();
+            quizAttempts.put(quiz.getQuizId(),prevAttempts);
+        }
+        prevAttempts.add(attempt);
+        return attempt;
+    }
+    public List <QuizAttempts> getAllQuizAttempts(int quizId){
+        return quizAttempts.getOrDefault(quizId,new ArrayList<>());
+    }
+    public QuizAttempt getBestAttempt(int quizId){
+        List<QuizAttempt> attempts=quizAttempts.get(quizId);
+        if (attempts==null){return null;}
+        QuizAttempt best= attempts.get(0);
+        for (QuizAttempt a: attempts){
+            if (a.getScore> best.getScore){
+                best=a;
+            }
+        }
+        return best;
+    }
+    public boolean hasPassed(int quizId){
+        best = getBestAttempt(quizId);
+        return best.isPassed();
+    }
+    
 }
