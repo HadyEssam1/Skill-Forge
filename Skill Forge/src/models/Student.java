@@ -64,4 +64,19 @@ public class Student extends User {
         }
         return attempts;
     }
+
+    public void setQuizScore(int courseId, int lessonId, int score){
+        quizAttempts.putIfAbsent(courseId,new HashMap<>());
+        quizAttempts.get(courseId).put(lessonId,score);
+    }
+    public Integer getQuizScore(int courseId, int lessonId){
+        if (!quizAttempts.containsKey(courseId)) return null;
+        return quizAttempts.get(courseId).getOrDefault(lessonId, null);
+    }
+
+    public boolean hasCompletedLesson(int courseId, int lessonId){
+        if (!progressMap.containsKey(courseId)) return false;
+        return progressMap.get(courseId).getOrDefault(lessonId,false);
+    }
+
 }
