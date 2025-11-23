@@ -5,6 +5,9 @@ import models.Lesson;
 import models.Student;
 import service.CourseService;
 import service.StudentService;
+import frontend.CertificateDashboardPanel;
+import frontend.CertificateDashboardPanel.CourseLookupService;
+import utilities.CertificateUtilities;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -22,6 +25,9 @@ public class StudentDashboard extends JFrame {
     private JCheckBox chkLessonCompleted;
     private JButton btnViewLessons, btnCloseLessons, btnEnroll, btnLogout, btnRefresh, btnRefreshAvailable, btnSearch, btnSearchAvailable;
 
+    private JButton btnViewCertificates;
+    private CertificateDashboardPanel certificatePanel;
+    private CertificateUtilities certificateUtilities;
     private Student student;
     private StudentService studentService;
     private CourseService courseService;
@@ -30,6 +36,7 @@ public class StudentDashboard extends JFrame {
         this.student = student;
         this.studentService = studentService;
         this.courseService = courseService;
+        this.certificateUtilities = new CertificateUtilities();
         initComponents();
         addTableSelectionListeners(); //
         loadEnrolledCourses();
@@ -221,14 +228,45 @@ public class StudentDashboard extends JFrame {
         btnLogout.setBounds(200, 10, 120, 40);
         bottomPanel.add(btnLogout);
 
+        btnViewCertificates = new JButton("Certificates");
+        btnViewCertificates.setBounds(350,10,150,40);
+        bottomPanel.add(btnViewCertificates);
+
+        // ---------------- Certificate Panel----------------
+        CourseLookupService courseLookupService = new CourseLookupService() {
+            @Override
+            public Course getCourse(String courseId) {
+                try {
+                    return courseService.getCourseById(Integer.parseInt(courseId));
+                } catch (NumberFormatException nfe) {
+                    System.err.println("Certificate Course ID is not a valid integer: " + courseId);
+                    return new Course(courseId,"Course Details Missing (Non-numeric ID)", "N/A");
+                } catch (Exception e) {
+                    System.err.println("Error looking up course ID: "+courseId+". " + e.getMessage());
+                    return new Course(courseId,"Course Details Missing","N/A");
+                }
+            }
+        };
+        certificatePanel=new CertificateDashboardPanel(
+                this.student,
+                this.certificateUtilities,
+                courseLookupService
+        );
+        certificatePanel.setBounds(5,5,975,470);
+        certificatePanel.setVisible(false);
+        mainPanel.add(certificatePanel);
+
         // ---------------- Actions ----------------
         btnCloseLessons.addActionListener(e -> {
             lessonsPanel.setVisible(false);
             coursesPanel.setVisible(true);
             courseInfoPanel.setVisible(true);
             bottomPanel.setVisible(true);
+            certificatePanel.setVisible(false);
+            mainPanel.revalidate();
+            mainPanel.repaint();
         });
-
+        btnViewCertificates.addActionListener(e -> showCertificatesPanel());
         btnEnroll.addActionListener(e -> enrollSelectedCourse());
         btnRefresh.addActionListener(e -> loadEnrolledCourses());
         btnRefreshAvailable.addActionListener(e -> loadAvailableCourses());
@@ -236,7 +274,17 @@ public class StudentDashboard extends JFrame {
         btnSearchAvailable.addActionListener(e -> searchAvailableCourses());
         btnLogout.addActionListener(e->System.exit(0));
         chkLessonCompleted.addActionListener(e -> updateLessonProgress());
+    }
+    private void showCertificatesPanel() {
+        coursesPanel.setVisible(false);
+        courseInfoPanel.setVisible(false);
+        lessonsPanel.setVisible(false);
 
+        certificatePanel.setVisible(true);
+        bottomPanel.setVisible(true);
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     // ---------------- Table Listeners ----------------
