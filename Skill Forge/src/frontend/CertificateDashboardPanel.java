@@ -1,5 +1,5 @@
-package frontend;
-
-public class CertificateDashboardPanel extends JPanel {
-
-}
+//package frontend;
+//
+//public class CertificateDashboardPanel extends JPanel {
+//
+//}

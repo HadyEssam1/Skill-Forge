@@ -9,6 +9,18 @@
   "username" : "hassan.tarek@gmail.com",
   "email" : "hassan.tarek@gmail.com",
   "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
-  "coursesTeaching" : [ ],
+  "coursesTeaching" : [ 1 ],
   "userId" : 2
+}, {
+  "role" : "student",
+  "username" : "Hassan",
+  "email" : "hassan@gmail.com",
+  "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
+  "coursesEnrolled" : [ 1 ],
+  "progressMap" : {
+    "1" : { }
+  },
+  "earnedCertificates" : [ ],
+  "quizAttemptsMap" : { },
+  "userId" : 3
 } ]

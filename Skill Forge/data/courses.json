@@ -1,0 +1,9 @@
+[ {
+  "courseId" : 1,
+  "title" : "Logic2",
+  "description" : "Compu",
+  "instructorId" : 2,
+  "status" : "APPROVED",
+  "lessons" : [ ],
+  "studentIds" : [ 3 ]
+} ]
