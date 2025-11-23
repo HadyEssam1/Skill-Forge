@@ -9,6 +9,7 @@ public class Course {
     private String description;
     private int instructorId;
     private CourseStatus status;
+
     public enum CourseStatus{
         PENDING, APPROVED, REJECTED
     }
@@ -50,7 +51,7 @@ public class Course {
     public String getTitle(){ return title; }
     public String getDescription(){ return description; }
     public int getInstructorId(){ return instructorId; }
-    public List<Lesson> getLessons(){ return lessons; }
+    public List<Lesson> getLessons(){ return new ArrayList<>(lessons); }
     public List<Integer> getStudentIds(){ return studentIds; }
 
     public void setCourseId(int courseId){

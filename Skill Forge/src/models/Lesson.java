@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Lesson {
     private int lessonId;
+    private int courseId;
     private String title;
     private String content;
     private List<String> resources;
@@ -12,11 +13,13 @@ public class Lesson {
 
     public Lesson() {}
 
-    public Lesson(int lessonId, String title, String content) {
-        validateId(lessonId);
+    public Lesson(int lessonId,int courseId, String title, String content) {
+        validateLessonId(lessonId);
+        validateCourseId(courseId);
         validateTitle(title);
         validateContent(content);
         this.lessonId = lessonId;
+        this.courseId=courseId;
         this.title = title;
         this.content = content;
         this.resources = new ArrayList<>();
@@ -24,9 +27,10 @@ public class Lesson {
     }
 
     public int getLessonId() { return lessonId; }
+    public int getCourseId() {return courseId;}
 
     public void setLessonId(int lessonId) {
-        validateId(lessonId);
+        validateLessonId(lessonId);
         this.lessonId = lessonId;
     }
 
@@ -56,13 +60,17 @@ public class Lesson {
     public void setQuiz(Quiz quiz){
         if(quiz==null){throw new IllegalArgumentException("quiz cannot be null");}
         if (quiz.getLessonId()!= lessonId){throw new IllegalArgumentException("this quiz does not belong to this lesson!!");}
-        this quiz=quiz;
+        this.quiz=quiz;
     }
-    public removeQuiz(){this.quiz=null;}
+    public void removeQuiz(){this.quiz=null;}
 
-    private void validateId(int lessonId) {
+    private void validateLessonId(int lessonId) {
         if (lessonId <= 0)
-            throw new IllegalArgumentException("Lesson ID must be positive.");
+            throw new IllegalArgumentException("lesson ID must be positive.");
+    }
+    private void validateCourseId(int courseId) {
+        if (courseId <= 0)
+            throw new IllegalArgumentException("course ID must be positive.");
     }
 
     private void validateTitle(String title) {
