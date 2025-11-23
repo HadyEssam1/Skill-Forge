@@ -20,7 +20,7 @@ public class InstructorDashboard extends JFrame {
     private JTextArea txtNewLessonContent,txtNewCourseDesc;
     private JTextArea txtChoice1,txtChoice2,txtChoice3,txtChoice4,txtQuestion;
     private JButton btnAddCourse, btnEditCourse, btnDeleteCourse,btnCancelCourse,btnSaveCourse;
-    private JButton btnAddLesson, btnEditLesson, btnDeleteLesson,btnSaveLesson,btnCancelLesson;
+    private JButton btnAddLesson, btnEditLesson, btnDeleteLesson,btnSaveLesson,btnCancelLesson,btnCreateQuiz;
     private JButton btnContinueQuiz,btnCancelQuiz;
     private JButton btnAddQuestion,btnClearQuestion,btnFinishQuiz;
     private JButton btnViewLessons, btnCloseLessons;
@@ -160,6 +160,11 @@ public class InstructorDashboard extends JFrame {
         btnCloseLessons = new JButton("Close Lessons");
         btnCloseLessons.setBounds(620, 160, 120, 35);
         lessonsPanel.add(btnCloseLessons);
+
+        btnCreateQuiz = new JButton("Close Lessons");
+        btnCreateQuiz.setBounds(620, 210, 120, 35);
+        lessonsPanel.add(btnCreateQuiz);
+
 
         //Enrolled Students Panel
         enrolledStudentsPanel = new JPanel(null);
@@ -464,6 +469,7 @@ public class InstructorDashboard extends JFrame {
             }
         });
         btnCloseLessons.addActionListener(e -> showHome());
+        btnCreateQuiz.addActionListener(e->{showPanel(createQuizFrom));
         btnSaveLesson.addActionListener(e -> {
             try {
                 int selectedRow = coursesTable.getSelectedRow();
@@ -577,6 +583,9 @@ public class InstructorDashboard extends JFrame {
             q.addChoice(choice3);
             q.addchoice(choice4);
             q.setCorrectAnsIndex(correctAnswer);
+            if(currentQuiz==null){
+                throw new Exception("please create Quiz first!!");
+            }
             currentQuiz.addQuestionTo(currentquestionNum,q);
         });
         btnClearQuestion.addActionListener(e->{
@@ -614,6 +623,8 @@ public class InstructorDashboard extends JFrame {
         enrolledStudentsPanel.setVisible(false);
         addCoursePanel.setVisible(false);
         addLessonPanel.setVisible(false);
+        createQuizPanel.setVisible(false);
+        AddQuestionPanel.setVisible(false);
         bottomPanel.setVisible(true);
     }
     private void showPanel(JPanel panelToShow) {
@@ -624,8 +635,11 @@ public class InstructorDashboard extends JFrame {
         addCoursePanel.setVisible(false);
         addLessonPanel.setVisible(false);
         editLessonPanel.setVisible(false);
+        createQuizPanel.setVisible(false);
+        AddQuestionsPanel.setVisible(panelToShow==createQuizPanel);
         bottomPanel.setVisible(panelToShow == coursesPanel || panelToShow == courseInfoPanel);
         panelToShow.setVisible(true);
+        
     }
     private void loadCreatedCourses() {
         DefaultTableModel model = (DefaultTableModel) coursesTable.getModel();
