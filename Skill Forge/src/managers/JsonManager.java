@@ -2,6 +2,8 @@ package managers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import models.User;
 
 import java.io.File;
@@ -12,12 +14,15 @@ public abstract class JsonManager<T> {
 
     protected List<T> data = new ArrayList<>();
     protected final String filePath;
-    protected final ObjectMapper mapper = new ObjectMapper();
+    protected ObjectMapper mapper = new ObjectMapper();
     protected final TypeReference<List<T>> typeReference;
 
     public JsonManager(String filePath, TypeReference<List<T>> typeReference) throws Exception {
         this.filePath = filePath;
         this.typeReference = typeReference;
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
         load();
     }
 
@@ -34,6 +39,7 @@ public abstract class JsonManager<T> {
          }
          else {
              data = mapper.readValue(file,typeReference);
+
          }
         } catch (Exception e) {
             throw new Exception("error : Loading File");
@@ -46,7 +52,7 @@ public abstract class JsonManager<T> {
             File f= new File(filePath);
             mapper.writerWithDefaultPrettyPrinter().writeValue(f, data);
         } catch (Exception ignored) {
-            throw new Exception("Data Can't be Saved");
+            throw new Exception("Error parsing JSON file: " + filePath + "\n" + ignored.getMessage());
         }
     }
 

@@ -15,7 +15,7 @@ public class Certificate {
         this.studentID=studentID;
         this.courseID=courseID;
     }
-
+public Certificate(){}
     public String getCertificateID() {
         return certificateID;
     }

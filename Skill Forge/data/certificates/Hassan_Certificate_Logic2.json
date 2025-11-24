@@ -1,0 +1,16 @@
+{
+  "certificateId": "1-3-1763949355334",
+  "studentDetails": {
+    "userId": 3,
+    "name": "Hassan"
+  },
+  "courseDetails": {
+    "courseId": "1",
+    "title": "Logic2",
+    "instructorId": 2
+  },
+  "completionDetails": {
+    "completionDate": "2025-11-24T02:47:19+0200",
+    "issuedBy": "E-Learning Platform"
+  }
+}

@@ -18,9 +18,16 @@
   "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
   "coursesEnrolled" : [ 1 ],
   "progressMap" : {
-    "1" : { }
+    "1" : {
+      "1" : true
+    }
   },
-  "earnedCertificates" : [ ],
+  "earnedCertificates" : [ {
+    "certificateID" : "f9f98a93-58ca-41cb-83be-bba161f3bb48",
+    "issueDate" : "2025-11-24T02:47:19.7218535",
+    "studentID" : 3,
+    "courseID" : 1
+  } ],
   "quizAttemptsMap" : { },
   "userId" : 3
 } ]

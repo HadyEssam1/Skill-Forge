@@ -4,6 +4,13 @@
   "description" : "Compu",
   "instructorId" : 2,
   "status" : "APPROVED",
-  "lessons" : [ ],
+  "lessons" : [ {
+    "lessonId" : 1,
+    "courseId" : 1,
+    "title" : "L1",
+    "content" : "Firsdt",
+    "resources" : [ ],
+    "quiz" : null
+  } ],
   "studentIds" : [ 3 ]
 } ]

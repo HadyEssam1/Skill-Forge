@@ -2,6 +2,8 @@ package managers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import models.Admin;
 import models.Instructor;
 import models.Student;
@@ -30,6 +32,8 @@ public class UserJsonManager extends JsonManager<User> {
             }
             else {
             ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             JsonNode jsonNode = mapper.readTree(file);
             List<User> list = new ArrayList<>();
             for (JsonNode node : jsonNode) {
@@ -52,11 +56,16 @@ public class UserJsonManager extends JsonManager<User> {
         }}
         catch (Exception e)
         {
-            throw new Exception("Error parsing JSON file: " + filePath + "\n" + e.getMessage());
+            extracted(e);
 
         }
         return null;
     }
+
+    private void extracted(Exception e) throws Exception {
+        throw new Exception("Error parsing JSON file: " + filePath + "\n" + e.getMessage());
+    }
+
     public User getById(int id) {
         for (User u : data) {
             if (u.getUserId() == id)

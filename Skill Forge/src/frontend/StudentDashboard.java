@@ -1,17 +1,21 @@
 package frontend;
 
+import models.Certificate;
 import models.Course;
 import models.Lesson;
 import models.Student;
+import service.CertificateService;
 import service.CourseService;
 import service.StudentService;
-import frontend.CertificateDashboardPanel;
-import frontend.CertificateDashboardPanel.CourseLookupService;
 import utilities.CertificateUtilities;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.List;
 
 public class StudentDashboard extends JFrame {
@@ -26,19 +30,28 @@ public class StudentDashboard extends JFrame {
     private JButton btnViewLessons, btnCloseLessons, btnEnroll, btnLogout, btnRefresh, btnRefreshAvailable, btnSearch, btnSearchAvailable;
 
     private JButton btnViewCertificates;
-    private CertificateDashboardPanel certificatePanel;
+    private JButton btnEarnCertificate;
+    private JPanel certificateHolderPanel;
+    private frontend.CertificateDashboardPanel certificatePanel;
     private CertificateUtilities certificateUtilities;
+
     private Student student;
     private StudentService studentService;
     private CourseService courseService;
+    private CertificateService certificateService;
 
-    public StudentDashboard(Student student, StudentService studentService, CourseService courseService) {
+    public StudentDashboard(Student student,
+                            StudentService studentService,
+                            CourseService courseService,
+                            CertificateService certificateService,
+                            CertificateUtilities certificateUtilities) {
         this.student = student;
         this.studentService = studentService;
         this.courseService = courseService;
-        this.certificateUtilities = new CertificateUtilities();
+        this.certificateService = certificateService;
+        this.certificateUtilities = certificateUtilities;
         initComponents();
-        addTableSelectionListeners(); //
+        addTableSelectionListeners();
         loadEnrolledCourses();
         loadAvailableCourses();
     }
@@ -151,6 +164,16 @@ public class StudentDashboard extends JFrame {
         btnViewLessons.setBounds(150, 250, 150, 35);
         courseInfoPanel.add(btnViewLessons);
 
+        // ---------- Earn Certificate button placed in Course Info Panel ----------
+        btnEarnCertificate = new JButton("Earn Certificate");
+        btnEarnCertificate.setBounds(150, 300, 170, 25);
+        btnEarnCertificate.setBackground(new Color(52, 168, 83));
+        btnEarnCertificate.setForeground(Color.WHITE);
+        btnEarnCertificate.setFocusPainted(false);
+        btnEarnCertificate.setVisible(false);
+        courseInfoPanel.add(btnEarnCertificate);
+        btnEarnCertificate.addActionListener(e -> earnCertificate());
+
         // ---------------- Lessons Panel ----------------
         lessonsPanel = new JPanel(null);
         lessonsPanel.setBounds(5, 5, 975, 535);
@@ -229,32 +252,14 @@ public class StudentDashboard extends JFrame {
         bottomPanel.add(btnLogout);
 
         btnViewCertificates = new JButton("Certificates");
-        btnViewCertificates.setBounds(350,10,150,40);
+        btnViewCertificates.setBounds(350, 10, 150, 40);
         bottomPanel.add(btnViewCertificates);
 
-        // ---------------- Certificate Panel----------------
-        CourseLookupService courseLookupService = new CourseLookupService() {
-            @Override
-            public Course getCourse(String courseId) {
-                try {
-                    return courseService.getCourseById(Integer.parseInt(courseId));
-                } catch (NumberFormatException nfe) {
-                    System.err.println("Certificate Course ID is not a valid integer: " + courseId);
-                    return new Course(courseId,"Course Details Missing (Non-numeric ID)", "N/A");
-                } catch (Exception e) {
-                    System.err.println("Error looking up course ID: "+courseId+". " + e.getMessage());
-                    return new Course(courseId,"Course Details Missing","N/A");
-                }
-            }
-        };
-        certificatePanel=new CertificateDashboardPanel(
-                this.student,
-                this.certificateUtilities,
-                courseLookupService
-        );
-        certificatePanel.setBounds(5,5,975,470);
-        certificatePanel.setVisible(false);
-        mainPanel.add(certificatePanel);
+        certificateHolderPanel = new JPanel(null);
+        certificateHolderPanel.setBounds(500, 220, 480, 270);
+        certificateHolderPanel.setOpaque(false);
+        certificateHolderPanel.setVisible(false);
+        mainPanel.add(certificateHolderPanel);
 
         // ---------------- Actions ----------------
         btnCloseLessons.addActionListener(e -> {
@@ -262,7 +267,7 @@ public class StudentDashboard extends JFrame {
             coursesPanel.setVisible(true);
             courseInfoPanel.setVisible(true);
             bottomPanel.setVisible(true);
-            certificatePanel.setVisible(false);
+            certificateHolderPanel.setVisible(false);
             mainPanel.revalidate();
             mainPanel.repaint();
         });
@@ -272,19 +277,15 @@ public class StudentDashboard extends JFrame {
         btnRefreshAvailable.addActionListener(e -> loadAvailableCourses());
         btnSearch.addActionListener(e -> searchEnrolledCourses());
         btnSearchAvailable.addActionListener(e -> searchAvailableCourses());
-        btnLogout.addActionListener(e->System.exit(0));
+        btnLogout.addActionListener(e -> System.exit(0));
         chkLessonCompleted.addActionListener(e -> updateLessonProgress());
-    }
-    private void showCertificatesPanel() {
-        coursesPanel.setVisible(false);
-        courseInfoPanel.setVisible(false);
-        lessonsPanel.setVisible(false);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                showMainPanel();
+            }
+        });
 
-        certificatePanel.setVisible(true);
-        bottomPanel.setVisible(true);
-
-        mainPanel.revalidate();
-        mainPanel.repaint();
     }
 
     // ---------------- Table Listeners ----------------
@@ -297,6 +298,13 @@ public class StudentDashboard extends JFrame {
                     txtCourseId.setText(enrolledTable.getValueAt(selectedRow, 0).toString());
                     txtCourseTitle.setText(enrolledTable.getValueAt(selectedRow, 1).toString());
                     txtCourseDesc.setText(enrolledTable.getValueAt(selectedRow, 2).toString());
+                    btnEarnCertificate.setVisible(true);
+                    try {
+                        int courseId = Integer.parseInt(txtCourseId.getText());
+                        updateEarnButtonState(courseId);
+                    } catch (Exception ex) {
+                        btnEarnCertificate.setEnabled(false);
+                    }
                 }
             }
         });
@@ -309,6 +317,7 @@ public class StudentDashboard extends JFrame {
                     txtCourseId.setText(availableTable.getValueAt(selectedRow, 0).toString());
                     txtCourseTitle.setText(availableTable.getValueAt(selectedRow, 1).toString());
                     txtCourseDesc.setText(availableTable.getValueAt(selectedRow, 2).toString());
+                    btnEarnCertificate.setVisible(false);
                 }
             }
         });
@@ -324,8 +333,9 @@ public class StudentDashboard extends JFrame {
             coursesPanel.setVisible(false);
             courseInfoPanel.setVisible(false);
             bottomPanel.setVisible(false);
+            certificateHolderPanel.setVisible(false);
 
-            int courseId =Integer.parseInt(enrolledTable.getValueAt(selectedRow, 0).toString());
+            int courseId = Integer.parseInt(enrolledTable.getValueAt(selectedRow, 0).toString());
             loadLessons(courseId);
         });
 
@@ -337,33 +347,34 @@ public class StudentDashboard extends JFrame {
                     txtLessonId.setText(lessonsTable.getValueAt(selectedRow, 0).toString());
                     txtLessonTitle.setText(lessonsTable.getValueAt(selectedRow, 1).toString());
                     chkLessonCompleted.setSelected((Boolean) lessonsTable.getValueAt(selectedRow, 2));
-
                 }
             }
         });
     }
+
     private void loadLessons(int courseId) {
         DefaultTableModel model = (DefaultTableModel) lessonsTable.getModel();
         model.setRowCount(0);
         List<Lesson> lessons = courseService.viewLessons(courseId);
         for (Lesson l : lessons) {
-            boolean completed = studentService.getLessonProgress(student.getUserId(),courseId,l.getLessonId());
+            boolean completed = studentService.getLessonProgress(student.getUserId(), courseId, l.getLessonId());
             model.addRow(new Object[]{l.getLessonId(), l.getTitle(), completed});
         }
     }
+
     private void loadEnrolledCourses() {
-        try{
-        DefaultTableModel model = (DefaultTableModel) enrolledTable.getModel();
-        List<Course> enrolledCourses = studentService.viewEnrolledCourses(student.getUserId());
-        model.setRowCount(0);
-        for (Course c : enrolledCourses) {
-            model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
-        }}
-        catch (Exception e)
-        {
-            JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        try {
+            DefaultTableModel model = (DefaultTableModel) enrolledTable.getModel();
+            List<Course> enrolledCourses = studentService.viewEnrolledCourses(student.getUserId());
+            model.setRowCount(0);
+            for (Course c : enrolledCourses) {
+                model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void loadAvailableCourses() {
         try {
             DefaultTableModel model = (DefaultTableModel) availableTable.getModel();
@@ -376,6 +387,7 @@ public class StudentDashboard extends JFrame {
             JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void searchEnrolledCourses() {
         try {
             String keyword = txtSearchEnrolled.getText().trim();
@@ -388,25 +400,26 @@ public class StudentDashboard extends JFrame {
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    private void searchAvailableCourses() {
-        try{
-        String keyword = txtSearchAvailable.getText().trim();
-        DefaultTableModel model = (DefaultTableModel) availableTable.getModel();
-        model.setRowCount(0);
-        if (!keyword.isEmpty()) {
-            List<Course> results = studentService.searchAvailableCourses(student.getUserId(),keyword);
-            for (Course c : results) {
-                model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
-            }
-        }
-    }catch (Exception e)
-        {
-            JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 
-        }}
+    private void searchAvailableCourses() {
+        try {
+            String keyword = txtSearchAvailable.getText().trim();
+            DefaultTableModel model = (DefaultTableModel) availableTable.getModel();
+            model.setRowCount(0);
+            if (!keyword.isEmpty()) {
+                List<Course> results = studentService.searchAvailableCourses(student.getUserId(), keyword);
+                for (Course c : results) {
+                    model.addRow(new Object[]{c.getCourseId(), c.getTitle(), c.getDescription(), c.getInstructorId()});
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void enrollSelectedCourse() {
         int selectedRow = availableTable.getSelectedRow();
         if (selectedRow != -1) {
@@ -416,20 +429,18 @@ public class StudentDashboard extends JFrame {
             int confirm = JOptionPane.showConfirmDialog(null,
                     "Are you sure you want to enroll in this course?");
             if (confirm == JOptionPane.YES_OPTION) {
-                try{
-                boolean success = studentService.enrollInCourse(student.getUserId(), courseId);
-                if (success) {
-                    JOptionPane.showMessageDialog(null, "You have successfully enrolled in the course!");
-                    loadEnrolledCourses();
-                    loadAvailableCourses();
-                } else {
-                    JOptionPane.showMessageDialog(null, "You are already enrolled in this course!");
+                try {
+                    boolean success = studentService.enrollInCourse(student.getUserId(), courseId);
+                    if (success) {
+                        JOptionPane.showMessageDialog(null, "You have successfully enrolled in the course!");
+                        loadEnrolledCourses();
+                        loadAvailableCourses();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "You are already enrolled in this course!");
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-            catch (Exception e)
-            {
-                JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
             }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a course to enroll.");
@@ -448,10 +459,152 @@ public class StudentDashboard extends JFrame {
             } else {
                 int selectedRow = lessonsTable.getSelectedRow();
                 lessonsTable.setValueAt(completed, selectedRow, 2);
+                try {
+                    updateEarnButtonState(courseId);
+                } catch (Exception ignored) {}
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Select a lesson first!");
         }
     }
+    private void earnCertificate() {
+        try {
+            if (txtCourseId.getText() == null || txtCourseId.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Select a course first (from Enrolled Courses)",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
+            int courseId = Integer.parseInt(txtCourseId.getText());
+            Certificate cert = certificateService.generateCertificateForCourse(
+                    student.getUserId(),
+                    courseId
+            );
+            Course course = courseService.getCourseById(courseId);
+
+            File generated = certificateUtilities.generateCertificate(student, course, cert);
+
+            certificateHolderPanel.removeAll();
+
+            ActionListener downloadListener = evt -> {
+                JOptionPane.showMessageDialog(this,
+                        "Certificate JSON saved at:\n" + generated.getAbsolutePath(),
+                        "Downloaded", JOptionPane.INFORMATION_MESSAGE);
+            };
+
+            ActionListener closeListener = evt -> showMainPanel();
+            CertificateDashboardPanel certPanel = new CertificateDashboardPanel(student, cert, course, downloadListener, closeListener);
+            certificatePanel.setBounds(0, 0, 480, 220);
+            certificateHolderPanel.add(certificatePanel);
+
+            coursesPanel.setVisible(false);
+            courseInfoPanel.setVisible(false);
+            lessonsPanel.setVisible(false);
+            bottomPanel.setVisible(false);
+            certificateHolderPanel.setVisible(true);
+            certificateHolderPanel.setBounds(250, 50, 500, 300);
+
+            mainPanel.revalidate();
+            mainPanel.repaint();
+
+            JOptionPane.showMessageDialog(this,
+                    "Certificate issued successfully!\nSaved to: " + generated.getAbsolutePath(),
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            updateEarnButtonState(courseId);
+
+        } catch (NumberFormatException nfe) {
+            JOptionPane.showMessageDialog(this,
+                    "Invalid course ID.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+
+            try {
+                int courseId = Integer.parseInt(txtCourseId.getText());
+                updateEarnButtonState(courseId);
+            } catch (Exception ignored) { }
+        }
+    }
+    private void updateEarnButtonState(int courseId) {
+        try {
+            boolean existing = student.getEarnedCertificates()
+                    .stream()
+                    .anyMatch(c -> c.getCourseID() == courseId);
+            btnEarnCertificate.setEnabled(!existing);
+        } catch (Exception ex) {
+            btnEarnCertificate.setEnabled(false);
+
+        }
+    }
+    private void showCertificatesPanel() {
+        try {
+            int selectedCourseRow = enrolledTable.getSelectedRow();
+
+            if (selectedCourseRow == -1) {
+                throw new Exception("Please select a course first.");
+            }
+
+            int courseId = Integer.parseInt(enrolledTable.getValueAt(selectedCourseRow, 0).toString());
+
+            Certificate cert = certificateService.getCertificateForCourse(student.getUserId(), courseId);
+            if (cert == null) {
+                JOptionPane.showMessageDialog(this,
+                        "No certificate available for this course.",
+                        "Info",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            Course course = courseService.getCourseById(courseId);
+
+            certificateHolderPanel.removeAll();
+            certificateHolderPanel.setLayout(null);
+            File generated = certificateUtilities.generateCertificate(student, course, cert);
+            ActionListener downloadListener = evt -> {
+                JOptionPane.showMessageDialog(this,
+                        "Certificate JSON saved at:\n" + generated.getAbsolutePath(),
+                        "Downloaded", JOptionPane.INFORMATION_MESSAGE);
+            };
+            ActionListener closeListener = evt -> showMainPanel();
+
+            CertificateDashboardPanel certPanel =
+                    new CertificateDashboardPanel(student, cert, course, downloadListener, closeListener);
+
+            certPanel.setBounds(0, 0, 480, 220);
+            certificateHolderPanel.add(certPanel);
+
+            certificateHolderPanel.setBounds(250, 50, 500, 300);
+            coursesPanel.setVisible(false);
+            courseInfoPanel.setVisible(false);
+            lessonsPanel.setVisible(false);
+            bottomPanel.setVisible(false);
+            certificateHolderPanel.setVisible(true);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void showMainPanel() {
+        coursesPanel.setVisible(true);
+        courseInfoPanel.setVisible(true);
+        lessonsPanel.setVisible(false);
+        bottomPanel.setVisible(true);
+        certificateHolderPanel.setVisible(false);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
 }

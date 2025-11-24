@@ -1,11 +1,10 @@
 package frontend;
-import managers.CourseJsonManager;
-import managers.UserJsonManager;
 import models.Admin;
 import models.Instructor;
 import models.Student;
 import models.User;
 import service.*;
+import utilities.CertificateUtilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,17 +19,21 @@ public class Login extends JFrame {
     private InstructorService instructorService;
     private StudentService studentService;
     private AdminService adminService;
+    private  CertificateService certificateService;
+    private CertificateUtilities certificateUtilities;
     private JTextField jTextField1;
     private JPasswordField jPasswordField1;
     private JButton jButton1, jButton2;
     private JLabel jLabel1, jLabel2, jLabel3, signUpLabel;
     private JPanel jPanel2;
-    public Login(UserService userService ,InstructorService instructorService,StudentService studentService,AdminService adminService,CourseService courseService ) {
+    public Login(UserService userService , InstructorService instructorService, StudentService studentService, AdminService adminService, CourseService courseService, CertificateService certificateService, CertificateUtilities certificateUtilities) {
        this.userService=userService;
        this.instructorService=instructorService;
        this.studentService=studentService;
        this.courseService=courseService;
        this.adminService=adminService;
+       this.certificateService=certificateService;
+       this.certificateUtilities=certificateUtilities;
     initComponents();
     }
     private void initComponents() {
@@ -113,7 +116,7 @@ public class Login extends JFrame {
                     } else if (user instanceof Student) {
                         Student student = (Student) user;
                         dispose();
-                        StudentDashboard studentDashboard = new StudentDashboard(student, studentService, courseService);
+                        StudentDashboard studentDashboard = new StudentDashboard(student, studentService, courseService,certificateService,certificateUtilities);
                         studentDashboard.setVisible(true);
                     }
                     else if (user instanceof Admin) {

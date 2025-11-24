@@ -28,7 +28,10 @@ public class Student extends User {
 
     }
     public List<Certificate> getEarnedCertificates(){
-        return new ArrayList<>(earnedCertificates);
+        return earnedCertificates;
+    }
+    public void setEarnedCertificates(List<Certificate> earnedCertificates) {
+        this.earnedCertificates = earnedCertificates;
     }
     public List<Integer> getCoursesEnrolled() {
         return new ArrayList<>(coursesEnrolled);
