@@ -144,7 +144,7 @@ public class InstructorService {
         }
         return maxId + 1;
     }
-    public void createQuizForLesson(int courseId, int lessonId, int quizId, int passMark) throws Exception {
+    public Quiz createQuizForLesson(int courseId, int lessonId, int quizId,int passMark) throws Exception {
 
         // Validate quizId
         if (quizId < 0)
@@ -178,6 +178,7 @@ public class InstructorService {
         // Assign to lesson
         lesson.setQuiz(quiz);
         courseManager.save();
+        return lesson.getQuiz();
     }
 
     public void removeQuizFromLesson(int instructorId, int courseId, int lessonId) throws Exception {

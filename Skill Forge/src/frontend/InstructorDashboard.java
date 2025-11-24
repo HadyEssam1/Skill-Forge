@@ -14,12 +14,15 @@ import java.util.List;
 public class InstructorDashboard extends JFrame {
 
     private JPanel mainPanel, coursesPanel, courseInfoPanel, lessonsPanel, enrolledStudentsPanel, bottomPanel;
-    private JPanel addCoursePanel, addLessonPanel;
+    private JPanel addCoursePanel, addLessonPanel,createQuizPanel,AddQuestionsPanel;
     private JTable coursesTable, lessonsTable, studentsTable;
-    private JTextField txtCourseId, txtCourseTitle, txtCourseDesc,txtNewCourseId,txtNewCourseTitle,txtNewLessonId,txtNewLessonTitle;
+    private JTextField txtCourseId, txtCourseTitle, txtCourseDesc,txtNewCourseId,txtNewCourseTitle,txtNewLessonId,txtNewLessonTitle,txtQuizCourseId,txtNewQuizId,txtQuizLessonId,txtQuizPassMark;
     private JTextArea txtNewLessonContent,txtNewCourseDesc;
+    private JTextArea txtChoice1,txtChoice2,txtChoice3,txtChoice4,txtQuestion;
     private JButton btnAddCourse, btnEditCourse, btnDeleteCourse,btnCancelCourse,btnSaveCourse;
-    private JButton btnAddLesson, btnEditLesson, btnDeleteLesson,btnSaveLesson,btnCancelLesson;
+    private JButton btnAddLesson, btnEditLesson, btnDeleteLesson,btnSaveLesson,btnCancelLesson,btnCreateQuiz,btnRemoveQuiz;
+    private JButton btnContinueQuiz,btnCancelQuiz;
+    private JButton btnAddQuestion,btnClearQuestion,btnFinishQuiz;
     private JButton btnViewLessons, btnCloseLessons;
     private JButton btnViewStudents, btnCloseStudents, btnLogout;
     private Instructor instructor;
@@ -30,6 +33,9 @@ public class InstructorDashboard extends JFrame {
     private JTextField txtEditLessonTitle;
     private JTextArea txtEditLessonContent;
     private JButton btnUpdateLesson, btnCancelEditLesson;
+    private int currentQuestionNum=1;
+    private int quizId;
+    private Quiz currentQuiz;
 
     public InstructorDashboard(Instructor instructor, InstructorService instructorService,CourseService courseService) {
         this.instructor=instructor;
@@ -154,6 +160,14 @@ public class InstructorDashboard extends JFrame {
         btnCloseLessons = new JButton("Close Lessons");
         btnCloseLessons.setBounds(620, 160, 120, 35);
         lessonsPanel.add(btnCloseLessons);
+
+        btnCreateQuiz = new JButton("Create Quiz");
+        btnCreateQuiz.setBounds(620, 210, 120, 35);
+        lessonsPanel.add(btnCreateQuiz);
+
+        btnRemoveQuiz = new JButton("Remove Quiz");
+        btnRemoveQuiz.setBounds(620, 260, 120, 35);
+        lessonsPanel.add(btnRemoveQuiz);
 
         //Enrolled Students Panel
         enrolledStudentsPanel = new JPanel(null);
@@ -316,6 +330,124 @@ public class InstructorDashboard extends JFrame {
         btnCancelEditLesson = new JButton("Cancel");
         btnCancelEditLesson.setBounds(220, 350, 100, 35);
         editLessonPanel.add(btnCancelEditLesson);
+        //quiz panels:
+        createQuizPanel = new JPanel(null);
+        createQuizPanel.setBounds(10, 10, 970, 250);
+        createQuizPanel.setBackground(new Color(75, 95, 110));
+        createQuizPanel.setVisible(false);
+        mainPanel.add(createQuizPanel);
+        
+        JLabel lblQuizCreation = new JLabel("Create new quiz");
+        lblQuizCreation.setForeground(Color.WHITE);
+        lblQuizCreation.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        lblQuizCreation.setBounds(10, 10, 200, 25);
+        createQuizPanel.add(lblQuizCreation);
+
+        JLabel lblNewQuizId = new JLabel("Quiz ID:");
+        lblNewQuizId.setForeground(Color.WHITE);
+        lblNewQuizId.setBounds(10, 50, 100, 25);
+        createQuizPanel.add(lblNewQuizId);
+
+        txtNewQuizId = new JTextField();
+        txtNewQuizId.setBounds(110, 50, 200, 25);
+        txtNewQuizId.setEditable(false);
+        createQuizPanel.add(txtNewQuizId);
+
+        JLabel lblQuizPassMark = new JLabel("PassMark:");
+        lblQuizPassMark.setForeground(Color.WHITE);
+        lblQuizPassMark.setBounds(10, 90, 100, 25);
+        createQuizPanel.add(lblQuizPassMark);
+
+        txtQuizPassMark = new JTextField();
+        txtQuizPassMark.setBounds(110, 90, 200, 25);
+        createQuizPanel.add(txtQuizPassMark);
+
+        btnContinueQuiz=new JButton("Continue..");
+        btnContinueQuiz.setBounds(110, 150, 100, 35);
+        createQuizPanel.add(btnContinueQuiz);
+
+        btnCancelQuiz=new JButton("cancel");
+        btnCancelQuiz.setBounds(220,150,100,35);
+        createQuizPanel.add(btnCancelQuiz);
+
+        AddQuestionsPanel = new JPanel(null);
+        AddQuestionsPanel.setBounds(10, 260, 970, 250);
+        AddQuestionsPanel.setBackground(new Color(75, 95, 110));
+        AddQuestionsPanel.setVisible(false);
+        mainPanel.add(AddQuestionsPanel);
+
+        JLabel lblAddQuestion = new JLabel("Write Question"+currentQuestionNum +":");
+        lblAddQuestion.setForeground(Color.WHITE);
+        lblAddQuestion.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        lblAddQuestion.setBounds(10, 10, 200, 25);
+        AddQuestionsPanel.add(lblAddQuestion);
+
+        JLabel lblQuestion = new JLabel("Question:");
+        lblQuestion.setForeground(Color.WHITE);
+        lblQuestion.setBounds(10, 40, 150, 25);
+        AddQuestionsPanel.add(lblQuestion);
+
+        txtQuestion = new JTextArea();
+        txtQuestion.setBounds(10, 70, 940, 30);
+        AddQuestionsPanel.add(txtQuestion);
+
+        JLabel lblChoice1 = new JLabel("Choice 1:");
+        lblChoice1.setForeground(Color.WHITE);
+        lblChoice1.setBounds(10, 130, 100, 25);
+        AddQuestionsPanel.add(lblChoice1);
+
+        txtChoice1 = new JTextArea();
+        txtChoice1.setBounds(110, 130, 840, 30);
+        AddQuestionsPanel.add(txtChoice1);
+
+        JLabel lblChoice2 = new JLabel("Choice 2:");
+        lblChoice2.setForeground(Color.WHITE);
+        lblChoice2.setBounds(10, 165, 100, 25);
+        AddQuestionsPanel.add(lblChoice2);
+
+        txtChoice2 = new JTextArea();
+        txtChoice2.setBounds(110, 165, 840, 30);
+        AddQuestionsPanel.add(txtChoice2);
+
+        JLabel lblChoice3 = new JLabel("Choice 3:");
+        lblChoice3.setForeground(Color.WHITE);
+        lblChoice3.setBounds(10,200, 100, 25);
+        AddQuestionsPanel.add(lblChoice3);
+
+        txtChoice3 = new JTextArea();
+        txtChoice3.setBounds(110, 200, 840, 30);
+        AddQuestionsPanel.add(txtChoice3);
+
+        JLabel lblChoice4 = new JLabel("Choice 4:");
+        lblChoice4.setForeground(Color.WHITE);
+        lblChoice4.setBounds(10,235, 100, 25);
+        AddQuestionsPanel.add(lblChoice4);
+
+        txtChoice4 = new JTextArea();
+        txtChoice4.setBounds(110, 235, 840, 30);
+        AddQuestionsPanel.add(txtChoice4);
+    
+        JLabel lblCorrectAns = new JLabel("Correct Answer:");
+        lblCorrectAns.setForeground(Color.WHITE);
+        lblCorrectAns.setBounds(10,270, 150, 25);
+        AddQuestionsPanel.add(lblCorrectAns);
+
+        String[] choices = {"Choice 1", "Choice 2", "Choice 3", "Choice 4"};
+        JComboBox<String> comboCorrect = new JComboBox<>(choices);
+        comboCorrect.setBounds(160, 270, 150, 30);
+        AddQuestionsPanel.add(comboCorrect);
+
+        btnAddQuestion=new JButton("Add Question");
+        btnAddQuestion.setBounds(10, 310, 150, 35);
+        AddQuestionsPanel.add(btnAddQuestion);
+
+        btnClearQuestion=new JButton("Clear");
+        btnClearQuestion.setBounds(170,310,120,35);
+        AddQuestionsPanel.add(btnClearQuestion);
+
+        btnFinishQuiz=new JButton("Finish Quiz");
+        btnFinishQuiz.setBounds(300,310,150,35);
+        AddQuestionsPanel.add(btnFinishQuiz);
         // Bottom Panel
         bottomPanel = new JPanel(null);
         bottomPanel.setBounds(0, 415, 980, 60);
@@ -340,6 +472,15 @@ public class InstructorDashboard extends JFrame {
             }
         });
         btnCloseLessons.addActionListener(e -> showHome());
+        btnCreateQuiz.addActionListener(e->showPanel(createQuizFrom));
+        btnRemoveQuiz.addActionListener(e->{
+        int selectedLessonRow = lessonsTable.getSelectedRow();
+        if (selectedLessonRow == -1) {
+        throw new Exception("Please select a lesson first.");
+        int lessonId = Integer.parseInt(lessonsTable.getValueAt(selectedRow, 0).toString());
+        Lesson lesson = c.getLessonById(lessonId);
+        lesson.removeQuiz();
+        });
         btnSaveLesson.addActionListener(e -> {
             try {
                 int selectedRow = coursesTable.getSelectedRow();
@@ -415,6 +556,75 @@ public class InstructorDashboard extends JFrame {
         btnUpdateLesson.addActionListener(e -> updateLesson());
         btnCancelEditLesson.addActionListener(e->showPanel(lessonsPanel));
     }
+        btnContinueQuiz.addActionListener(e->{
+            try {
+                int selectedLessonRow = lessonsTable.getSelectedRow();
+                if (selectedLessonRow == -1) {
+                    throw new Exception("Please select a lesson first.");
+                }
+                int selectedCourseRow = coursesTable.getSelectedRow();
+                if (selectedCourseRow == -1) {
+                    throw new Exception("Please select a course first.");
+                } 
+                int courseId = Integer.parseInt(coursesTable.getValueAt(selectedRow, 0).toString());
+                int lessonId = Integer.parseInt(lessonsTable.getValueAt(selectedRow, 0).toString());
+                quizId=Quiz.generateUniqueQuizId();
+                int passMark=txtQuizPassMark.getText().trim();
+                currentQuiz=instructorService.createQuizForLesson(courseId, lessonId, quizId,passMark);
+                JOptionPane.showMessageDialog(this, "Quiz created successfully!");
+            }
+            catch (Exception e1)
+            {
+                JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+        btnCancelQuiz.addActionListener(e -> showPanel(lessonsPanel));
+        btnAddQuestion.addActionListener(e->{
+
+            String questionText=txtQuestion.getText().trim();
+            String choice1=txtChoice1.getText().trim();
+            String choice2=txtChoice2.getText().trim();
+            String choice3=txtChoice3.getText().trim();
+            String choice4=txtChoice4.getText().trim();
+            String correctAnswer =comboCorrect.getSelectedIndex();
+            Question q= new Question(currentQuestionNum,quizId,questionText);
+            q.addChoice(choice1);
+            q.addChoice(choice2);
+            q.addChoice(choice3);
+            q.addchoice(choice4);
+            q.setCorrectAnsIndex(correctAnswer);
+            if(currentQuiz==null){
+                throw new Exception("please create Quiz first!!");
+            }
+            currentQuiz.addQuestionTo(currentquestionNum,q);
+        });
+        btnClearQuestion.addActionListener(e->{
+            txtQuestion.setText("");      
+            txtChoice1.setText("");        
+            txtChoice2.setText("");
+            txtChoice3.setText("");
+            txtChoice4.setText("");
+            comboCorrect.setSelectedIndex(0);
+        })
+        btnFinishQuiz.addActionListener(e->{
+        int selectedLessonRow = lessonsTable.getSelectedRow();
+        if (selectedLessonRow == -1) {
+        throw new Exception("Please select a lesson first.");
+        }
+        int selectedCourseRow = coursesTable.getSelectedRow();
+        if (selectedCourseRow == -1) {
+        throw new Exception("Please select a course first.");
+        } 
+        int courseId = Integer.parseInt(coursesTable.getValueAt(selectedRow, 0).toString());
+        int lessonId = Integer.parseInt(lessonsTable.getValueAt(selectedRow, 0).toString());
+        Course c = courseManager.getById(courseId);
+        Lesson lesson = c.getLessonById(lessonId);
+        lesson.setQuiz(currentQuiz);
+        currentQuiz=null;
+        currentQuestionNum=1;
+        });
+
 
     private void showHome() {
         coursesPanel.setVisible(true);
@@ -424,6 +634,8 @@ public class InstructorDashboard extends JFrame {
         enrolledStudentsPanel.setVisible(false);
         addCoursePanel.setVisible(false);
         addLessonPanel.setVisible(false);
+        createQuizPanel.setVisible(false);
+        AddQuestionPanel.setVisible(false);
         bottomPanel.setVisible(true);
     }
     private void showPanel(JPanel panelToShow) {
@@ -434,8 +646,11 @@ public class InstructorDashboard extends JFrame {
         addCoursePanel.setVisible(false);
         addLessonPanel.setVisible(false);
         editLessonPanel.setVisible(false);
+        createQuizPanel.setVisible(false);
+        AddQuestionsPanel.setVisible(panelToShow==createQuizPanel);
         bottomPanel.setVisible(panelToShow == coursesPanel || panelToShow == courseInfoPanel);
         panelToShow.setVisible(true);
+        
     }
     private void loadCreatedCourses() {
         DefaultTableModel model = (DefaultTableModel) coursesTable.getModel();

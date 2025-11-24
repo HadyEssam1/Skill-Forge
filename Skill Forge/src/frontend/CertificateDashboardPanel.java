@@ -19,6 +19,7 @@ public class CertificateDashboardPanel extends JPanel {
     private final Course course;
     private final Student student;
 
+<<<<<<< HEAD
     public CertificateDashboardPanel(Student student,
                                      Certificate certificate,
                                      Course course,
@@ -31,6 +32,17 @@ public class CertificateDashboardPanel extends JPanel {
 
         setBackground(new Color(245, 249, 255));
         setLayout(new BorderLayout(15, 15));
+=======
+    public interface CourseLookupService {
+        Course getCourse(String courseId);
+    }
+
+    public CertificateDashboardPanel(Certificate certificate,Course course,ActionListener downloadListener) {
+        this.certificate=certificate;
+        this.course =course;
+        setBackground(new Color(245,249,255));
+        setLayout(new BorderLayout(15,15));
+>>>>>>> 86b6ceea498cd46e2010cfac1223dc08eec5f2a5
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 5, 0, 0, new Color(42, 107, 245)),
                 BorderFactory.createEmptyBorder(15, 20, 15, 20)
