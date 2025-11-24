@@ -16,12 +16,13 @@
   "username" : "Hassan",
   "email" : "hassan@gmail.com",
   "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
-  "coursesEnrolled" : [ 1 ],
+  "coursesEnrolled" : [ 1, 2 ],
   "progressMap" : {
     "1" : {
       "1" : true,
       "2" : true
-    }
+    },
+    "2" : { }
   },
   "quizAttempts" : {
     "1763956945" : [ {

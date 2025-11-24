@@ -77,7 +77,7 @@
   "title" : "Logic",
   "description" : "Compu",
   "instructorId" : 2,
-  "status" : "PENDING",
+  "status" : "APPROVED",
   "lessons" : [ {
     "lessonId" : 1,
     "courseId" : 2,
@@ -93,5 +93,5 @@
     "resources" : [ ],
     "quiz" : null
   } ],
-  "studentIds" : [ ]
+  "studentIds" : [ 3 ]
 } ]
