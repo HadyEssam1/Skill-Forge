@@ -16,13 +16,12 @@ public class Question {
     public Question(int questionNum,int quizId,String text){
         validateQuestionNum(questionNum);
         validateText(text);
-
         this.questionNum=questionNum;
         this.quizId=quizId;
         this.text=text;
         this.choices=new ArrayList<>();
     }
-
+public Question(){}
     private void validateQuestionNum(int questionNum){
         if (questionNum < 1)
             throw new IllegalArgumentException("question number  must be a positive number!");

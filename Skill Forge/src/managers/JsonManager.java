@@ -42,7 +42,7 @@ public abstract class JsonManager<T> {
 
          }
         } catch (Exception e) {
-            throw new Exception("error : Loading File");
+            throw new Exception("Error parsing JSON file: " + filePath + "\n" + e.getMessage());
         }
         return null;
     }

@@ -11,13 +11,7 @@ public class Quiz {
     private int courseId;
     private int passMark;
     private Map<Integer,Question> questions;
-    private static int prevQuizId=0;
-
-    public static int generateUniqueQuizId(){
-        prevQuizId++;
-        return prevQuizId;
-    }
-    public Quiz(int lessonId,int courseId,int passMark){
+    public Quiz(int quizId,int lessonId,int courseId,int passMark){
         validateQuizId(quizId);
         validateLessonId(lessonId);
         validatePassMark(passMark);
@@ -26,12 +20,12 @@ public class Quiz {
         this.courseId=courseId;
         this.passMark=passMark;
         this.questions=new LinkedHashMap<>();//order is important.
-
     }
+    public Quiz(){}
     private void validateLessonId(int lessonId){
         if (lessonId < 0)
             throw new IllegalArgumentException("lesson ID must be a positive number!");
-        }
+    }
     protected void validateQuizId(int quizId){
         if (quizId < 0)
             throw new IllegalArgumentException("Quiz ID must be a positive number!");}
@@ -60,7 +54,7 @@ public class Quiz {
     }
     public void removeQuestionFrom(int questionNum){
         if(!questions.containsKey(questionNum)){
-          throw new IllegalArgumentException("question number"+questionNum +"doesn't exist!!");  
+            throw new IllegalArgumentException("question number"+questionNum +"doesn't exist!!");
         }
         questions.remove(questionNum);
     }
@@ -73,6 +67,5 @@ public class Quiz {
     public int getCourseId() {
         return courseId;
     }
-
 }
 

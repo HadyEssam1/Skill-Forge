@@ -10,7 +10,21 @@
     "title" : "L1",
     "content" : "Firsdt",
     "resources" : [ ],
-    "quiz" : null
+    "quiz" : {
+      "quizId" : 1763956945,
+      "lessonId" : 1,
+      "courseId" : 1,
+      "passMark" : 100,
+      "questions" : {
+        "1" : {
+          "questionNum" : 1,
+          "choices" : [ "Hassan", "t", "k", "l" ],
+          "correctAnsIndex" : 0,
+          "qtext" : "What is Your Name?"
+        }
+      },
+      "totalQ" : 1
+    }
   } ],
   "studentIds" : [ 3 ]
 } ]

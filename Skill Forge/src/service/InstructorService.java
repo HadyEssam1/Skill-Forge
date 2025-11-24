@@ -144,14 +144,12 @@ public class InstructorService {
         }
         return maxId + 1;
     }
-    public Quiz createQuizForLesson(int courseId, int lessonId, int quizId,int passMark) throws Exception {
+    public Quiz createQuizForLesson(int courseId, int lessonId, Quiz quiz) throws Exception {
 
-        // Validate quizId
-        if (quizId < 0)
-            throw new IllegalArgumentException("quizId cannot be negative number");
+        if (quiz == null)
+            throw new IllegalArgumentException("Quiz cannot be null");
 
-        // Validate passMark
-        if (passMark < 0 || passMark > 100)
+        if (quiz.getPassMark() < 0 || quiz.getPassMark() > 100)
             throw new IllegalArgumentException("passMark must be between 0 and 100");
 
         // Get course
@@ -159,7 +157,7 @@ public class InstructorService {
         if (c == null)
             throw new IllegalArgumentException("Course not found");
 
-        // Ensure instructor owns this course
+        // Check instructor
         User u = userManager.getById(c.getInstructorId());
         if (!(u instanceof Instructor))
             throw new IllegalArgumentException("Instructor not found");
@@ -172,14 +170,14 @@ public class InstructorService {
         Lesson lesson = c.getLessonById(lessonId);
         if (lesson == null)
             throw new IllegalArgumentException("Lesson not found");
-
-        // Create quiz (correct constructor)
-        Quiz quiz = new Quiz(quizId, lessonId, courseId, passMark);
-        // Assign to lesson
         lesson.setQuiz(quiz);
+
+        // Save
         courseManager.save();
-        return lesson.getQuiz();
+
+        return quiz;
     }
+
 
     public void removeQuizFromLesson(int instructorId, int courseId, int lessonId) throws Exception {
         Course c = courseManager.getById(courseId);
