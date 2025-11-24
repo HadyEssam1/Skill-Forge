@@ -34,7 +34,8 @@
           "correctAnsIndex" : 3,
           "qtext" : "when"
         }
-      }
+      },
+      "totalQ" : 3
     }
   }, {
     "lessonId" : 2,
@@ -66,7 +67,31 @@
           "correctAnsIndex" : 3,
           "qtext" : "when"
         }
-      }    }
+      },
+      "totalQ" : 3
+    }
   } ],
   "studentIds" : [ 3 ]
+}, {
+  "courseId" : 2,
+  "title" : "Logic",
+  "description" : "Compu",
+  "instructorId" : 2,
+  "status" : "PENDING",
+  "lessons" : [ {
+    "lessonId" : 1,
+    "courseId" : 2,
+    "title" : "l1",
+    "content" : "First",
+    "resources" : [ ],
+    "quiz" : null
+  }, {
+    "lessonId" : 2,
+    "courseId" : 2,
+    "title" : "L2",
+    "content" : "Second",
+    "resources" : [ ],
+    "quiz" : null
+  } ],
+  "studentIds" : [ ]
 } ]

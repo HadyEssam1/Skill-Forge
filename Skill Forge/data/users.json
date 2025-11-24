@@ -9,7 +9,7 @@
   "username" : "hassan.tarek@gmail.com",
   "email" : "hassan.tarek@gmail.com",
   "hashPass" : "ca86359f74c70e3a3ee6523e7047e9311522c32653105163aa164215dba253a9",
-  "coursesTeaching" : [ 1 ],
+  "coursesTeaching" : [ 1, 2 ],
   "userId" : 2
 }, {
   "role" : "student",
