@@ -1,4 +1,5 @@
 package service;
+
 import managers.CourseJsonManager;
 import managers.UserJsonManager;
 import models.*;
@@ -13,28 +14,34 @@ public class Analytics {
     private UserJsonManager userManager;
     private CourseService courseService;
     private StudentService studentService;
-    public Analytics(CourseJsonManager courseManager,UserJsonManager userManager,CourseService courseService,StudentService studentService) throws Exception {
-        this.courseManager=courseManager;
-        this.userManager=userManager;
-        this.courseService=courseService;
-        this.studentService=studentService;
+
+    public Analytics(CourseJsonManager courseManager, UserJsonManager userManager,
+                     CourseService courseService, StudentService studentService) throws Exception {
+        this.courseManager = courseManager;
+        this.userManager = userManager;
+        this.courseService = courseService;
+        this.studentService = studentService;
     }
 
+    private List<User> safeUsers() {
+        List<User> users = userManager.getAll();
+        return (users != null) ? users : new ArrayList<>();
+    }
 
     public double getLessonQuizAverage(int courseId, int lessonId) throws Exception {
         Course course = courseManager.getById(courseId);
         if (course == null) return 0;
 
         List<Integer> studentIds = course.getStudentIds();
-        ArrayList<User> users = userManager.load();
+        List<User> users = safeUsers();
 
-        int sum = 0;
-        int count = 0;
+        int sum = 0, count = 0;
 
         for (Integer sid : studentIds) {
             for (User u : users) {
                 if (u.getUserId() == sid && u instanceof Student s) {
-                    int quizId= courseService.getQuizIdByLesson(courseId,lessonId);
+
+                    int quizId = courseService.getQuizIdByLesson(courseId, lessonId);
 
                     QuizAttempt best = studentService.getBestAttempt(s.getUserId(), quizId);
                     if (best != null) {
@@ -50,7 +57,7 @@ public class Analytics {
     public Map<Integer, Double> getLessonQuizAverages(int courseId) throws Exception {
         Map<Integer, Double> lessonAverages = new HashMap<>();
         Course course = courseManager.getById(courseId);
-        if (course == null) return lessonAverages;                             // بتجيب الافرج لكل ليسون في الكورس الواحد
+        if (course == null) return lessonAverages;
 
         for (Lesson lesson : course.getLessons()) {
             double avg = getLessonQuizAverage(courseId, lesson.getLessonId());
@@ -59,16 +66,15 @@ public class Analytics {
         return lessonAverages;
     }
 
-
     public double getCourseCompletionRate(int courseId) throws Exception {
         Course course = courseManager.getById(courseId);
         if (course == null) return 0;
+
         List<Integer> studentIds = course.getStudentIds();
         List<Lesson> lessons = course.getLessons();
-
         if (studentIds.isEmpty() || lessons.isEmpty()) return 0;
 
-        ArrayList<User> users = userManager.load();
+        List<User> users = safeUsers();
 
         int totalLessons = lessons.size();
         int totalStudents = studentIds.size();
@@ -85,20 +91,19 @@ public class Analytics {
                 }
             }
         }
-        int totalPossible = totalLessons * totalStudents;
 
+        int totalPossible = totalStudents * totalLessons;
         return (totalCompleted * 100.0) / totalPossible;
     }
 
     public Map<String, Double> getStudentProgressForCourse(int courseId) throws Exception {
-
         Map<String, Double> progressMap = new HashMap<>();
         Course course = courseManager.getById(courseId);
         if (course == null) return progressMap;
 
         List<Integer> studentIds = course.getStudentIds();
         List<Lesson> lessons = course.getLessons();
-        ArrayList<User> users = userManager.load();
+        List<User> users = safeUsers();
 
         int totalLessons = lessons.size();
 
@@ -112,35 +117,32 @@ public class Analytics {
                             completed++;
                         }
                     }
+
                     double percent = (completed * 100.0) / totalLessons;
                     progressMap.put(s.getUsername(), percent);
                 }
             }
         }
+
         return progressMap;
     }
 
     public Map<String, Object> getInstructorInsights(int courseId) throws Exception {
-
         Map<String, Object> data = new HashMap<>();
         Course course = courseManager.getById(courseId);
+        if (course == null) return data;
 
-        if (course == null) {
-            return data;
-        }
-        //analytics 3shan el dashboard
         data.put("completionRate", getCourseCompletionRate(courseId));
 
         Map<Integer, Double> lessonAverages = new HashMap<>();
-
         for (Lesson lesson : course.getLessons()) {
             double avg = getLessonQuizAverage(courseId, lesson.getLessonId());
             lessonAverages.put(lesson.getLessonId(), avg);
         }
         data.put("quizAverages", lessonAverages);
+
         data.put("studentProgress", getStudentProgressForCourse(courseId));
 
         return data;
     }
-
 }

@@ -119,26 +119,27 @@ public class StudentService {
 
         return result;
     }
-    public QuizAttempt takeQuiz(int studentId, int quizId, Map<Integer,Integer> answers) throws Exception {
+    public QuizAttempt takeQuiz(int studentId, int quizId, Map<Integer,Integer> answers) throws Exception
+    {
         Student st = (Student) userManager.getById(studentId);
         if (st == null)
             throw new IllegalArgumentException("Student not found.");
+
         Quiz quiz = courseService.getQuizById(quizId);
         if (quiz == null)
             throw new IllegalArgumentException("Quiz not found!");
-        QuizAttempt attempt = new QuizAttempt(quizId);
 
-        for (Map.Entry<Integer,Integer> entry : answers.entrySet()) {
+        QuizAttempt attempt = new QuizAttempt(quizId);
+        for (Map.Entry<Integer, Integer> entry : answers.entrySet()) {
             attempt.addAnswer(entry.getKey(), entry.getValue(), quiz);
         }
         attempt.calcScore(quiz);
         st.addQuizAttempt(quiz.getQuizId(), attempt);
         if (attempt.isPassed()) {
-            int lessonId = quiz.getLessonId();
-            int courseId = quiz.getCourseId();
-            st.setLessonProgress(courseId, lessonId, true);
+            st.setLessonProgress(quiz.getCourseId(), quiz.getLessonId(), true);
         }
         userManager.save();
+
         return attempt;
     }
 

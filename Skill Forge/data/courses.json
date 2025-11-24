@@ -11,20 +11,62 @@
     "content" : "Firsdt",
     "resources" : [ ],
     "quiz" : {
-      "quizId" : 1763956945,
+      "quizId" : 1763964589,
       "lessonId" : 1,
       "courseId" : 1,
       "passMark" : 100,
       "questions" : {
         "1" : {
           "questionNum" : 1,
-          "choices" : [ "Hassan", "t", "k", "l" ],
+          "choices" : [ "a", "b", "c", "d" ],
           "correctAnsIndex" : 0,
-          "qtext" : "What is Your Name?"
+          "qtext" : "What"
+        },
+        "2" : {
+          "questionNum" : 2,
+          "choices" : [ "1", "2", "3", "4" ],
+          "correctAnsIndex" : 1,
+          "qtext" : "why"
+        },
+        "3" : {
+          "questionNum" : 3,
+          "choices" : [ "j", "k", "l", "m" ],
+          "correctAnsIndex" : 3,
+          "qtext" : "when"
         }
-      },
-      "totalQ" : 1
+      }
     }
+  }, {
+    "lessonId" : 2,
+    "courseId" : 1,
+    "title" : "L2",
+    "content" : "Second",
+    "resources" : [ ],
+    "quiz" : {
+      "quizId" : 1763965513,
+      "lessonId" : 2,
+      "courseId" : 1,
+      "passMark" : 75,
+      "questions" : {
+        "1" : {
+          "questionNum" : 1,
+          "choices" : [ "a", "b", "c", "d" ],
+          "correctAnsIndex" : 0,
+          "qtext" : "what is ?"
+        },
+        "2" : {
+          "questionNum" : 2,
+          "choices" : [ "1", "2", "3", "4" ],
+          "correctAnsIndex" : 0,
+          "qtext" : "is it"
+        },
+        "3" : {
+          "questionNum" : 3,
+          "choices" : [ "j", "k", "l", "m" ],
+          "correctAnsIndex" : 3,
+          "qtext" : "when"
+        }
+      }    }
   } ],
   "studentIds" : [ 3 ]
 } ]

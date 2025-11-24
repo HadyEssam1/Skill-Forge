@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,15 +50,15 @@ public class InstructorDashboard extends JFrame {
     private CourseJsonManager courseManager;
     private UserJsonManager userManager;
     private StudentService studentService;
+    Analytics analytics;
 
     public InstructorDashboard(Instructor instructor, InstructorService instructorService, CourseService courseService,
-                               CourseJsonManager courseManager,
-                               UserJsonManager userManager,
-                               StudentService studentService) {
+                               StudentService studentService,Analytics analytics) {
 
         this.instructor = instructor;
         this.instructorService = instructorService;
         this.courseService = courseService;
+        this.analytics=analytics;
         this.courseManager = courseManager;
         this.userManager = userManager;
         this.studentService = studentService;
@@ -981,58 +982,46 @@ public class InstructorDashboard extends JFrame {
     }
     private void openInsights(int courseId) {
         try {
-            Analytics analytics = new Analytics(courseManager, userManager, courseService, studentService);
             Map<String, Object> data = analytics.getInstructorInsights(courseId);
-            Map<Integer, Double> lessonAverages = (Map<Integer, Double>) data.get("quizAverages");
-            double completionRate = (double) data.get("completionRate");
-            // Convert IDs to names for chart
+            Map<Integer, Double> lessonAverages =
+                    (Map<Integer, Double>) data.get("quizAverages");
+            double completionRate =
+                    (double) data.get("completionRate");
+
+            Map<String, Double> studentProgress =
+                    (Map<String, Double>) data.get("studentProgress");
+
+            Course c = courseService.getCourseById(courseId);
             Map<String, Double> lessonChartData = new HashMap<>();
-            Course c = courseManager.getById(courseId);
             for (Lesson l : c.getLessons()) {
-                double avg = lessonAverages.get(l.getLessonId());
+                double avg = lessonAverages.getOrDefault(l.getLessonId(), 0.0);
                 lessonChartData.put(l.getTitle(), avg);
             }
 
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-            for (Lesson lesson : course.getLessons()) {
-                double avg = analytics.getLessonQuizAverage(courseId, lesson.getLessonId());
-                dataset.addValue(avg, "Average Score", lesson.getTitle());
-            }
+            JFreeChart quizChart =
+                    ChartGenerator.createLessonAverageChart(c.getTitle(), lessonChartData);
 
-
-            // CHART 1 (Lesson Avg)
-            JFreeChart quizChart = ChartGenerator.createLessonAverageChart(c.getTitle(), lessonChartData);
             ChartFrame frame1 = new ChartFrame("Lesson Quiz Averages", quizChart);
             frame1.setVisible(true);
             frame1.setSize(600, 400);
             frame1.setLocation(0, 0);
+            JFreeChart completionChart =
+                    ChartGenerator.createCompletionChart(c.getTitle(), completionRate);
 
-
-            // CHART 2 (Completion Rate)
-            JFreeChart completionChart = ChartGenerator.createCompletionChart(c.getTitle(), completionRate);
             ChartFrame frame2 = new ChartFrame("Completion Rate", completionChart);
             frame2.setVisible(true);
             frame2.setSize(600, 400);
             frame2.setLocation(610, 0);
+            JFreeChart studentChart =
+                    ChartGenerator.createStudentProgressChart(c.getTitle(), studentProgress);
 
-
-            // CHART 3 (Student Performance Progress)
-            Map<String, Double> studentProgress = (Map<String, Double>) data.get("studentProgress");
-            JFreeChart studentChart = ChartGenerator.createStudentProgressChart(c.getTitle(), studentProgress);
             ChartFrame frame3 = new ChartFrame("Student Progress", studentChart);
-            frame3.setSize(600, 400);
             frame3.setVisible(true);
+            frame3.setSize(600, 400);
             frame3.setLocation(310, 420);
-
-            System.out.println("Lesson Avg: " + lessonAverages);
-            System.out.println("Completion Rate: " + completionRate);
-            System.out.println("Progress: " + studentProgress);
-
         } catch (Exception ex) {
-            ex.printStackTrace(); // <-- SEE ERROR
             JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }
-
 
 }

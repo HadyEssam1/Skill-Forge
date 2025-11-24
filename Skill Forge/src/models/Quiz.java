@@ -60,6 +60,18 @@ public class Quiz {
     }
     public int getTotalQ(){return questions.size();}
 
+    public void setQuestions(Map<Integer, Question> questions) {
+        this.questions = questions;
+    }
+
+    public void setLessonId(int lessonId) {
+        this.lessonId = lessonId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
+    }
+
     public int getLessonId() {
         return lessonId;
     }

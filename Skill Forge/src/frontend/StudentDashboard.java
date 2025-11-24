@@ -1,9 +1,6 @@
 package frontend;
 
-import models.Certificate;
-import models.Course;
-import models.Lesson;
-import models.Student;
+import models.*;
 import service.CertificateService;
 import service.CourseService;
 import service.StudentService;
@@ -16,29 +13,45 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StudentDashboard extends JFrame {
 
-    private JPanel mainPanel, coursesPanel, courseInfoPanel, lessonsPanel, lessonDetailsPanel, bottomPanel;
+    private JPanel mainPanel, coursesPanel, courseInfoPanel, lessonsPanel, lessonDetailsPanel, bottomPanel, takeQuizPanel, AnsQuestionsPanel, AttemptResultPanel;
     private JTable enrolledTable, availableTable, lessonsTable;
     private JTextField txtSearchEnrolled, txtSearchAvailable;
     private JTextField txtCourseId, txtCourseTitle, txtCourseDesc;
     private JTextField txtLessonId, txtLessonTitle;
+    private JTextField txtAnsStat, txtCorrectAns, txtResult;
+    private JTextArea txtCurrQuestion; // was mismatched type
     private JTextArea txtLessonDesc;
     private JCheckBox chkLessonCompleted;
     private JButton btnViewLessons, btnCloseLessons, btnEnroll, btnLogout, btnRefresh, btnRefreshAvailable, btnSearch, btnSearchAvailable;
-
+    private JButton btnTakeQuiz;
+    private JButton btnEnterAns, btnQuitQuiz, btnShowMark, btnRetry, btnBye;
     private JButton btnViewCertificates;
     private JButton btnEarnCertificate;
     private JPanel certificateHolderPanel;
-    private frontend.CertificateDashboardPanel certificatePanel;
+    private CertificateDashboardPanel certificatePanel;
     private CertificateUtilities certificateUtilities;
 
     private Student student;
     private StudentService studentService;
     private CourseService courseService;
     private CertificateService certificateService;
+
+    private JTextArea[] choices;
+    private JRadioButton[] rdos;
+    private JLabel lblTakeQuiz, lblQPassMark, lblQuestionNum;
+
+    private String currentQText, currChoice1, currChoice2, curChoice3, currChoice4;
+    private int currQuestionNum = 1;
+    private QuizAttempt currAttempt;
+    private Map<Integer, Integer> ans;
+    private Quiz currQuiz;
+    private int currentCourseId = -1; // store course id when viewing lessons
 
     public StudentDashboard(Student student,
                             StudentService studentService,
@@ -58,7 +71,7 @@ public class StudentDashboard extends JFrame {
 
     private void initComponents() {
         setTitle("Student Dashboard");
-        setSize(1000, 517);
+        setSize(1000, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
@@ -232,11 +245,129 @@ public class StudentDashboard extends JFrame {
         chkLessonCompleted.setBackground(new Color(65, 85, 95));
         chkLessonCompleted.setBounds(110, 380, 120, 25);
         lessonDetailsPanel.add(chkLessonCompleted);
-
+        chkLessonCompleted.setEnabled(false);
         btnCloseLessons = new JButton("Close Lessons");
         btnCloseLessons.setBounds(90, 420, 150, 30);
         lessonDetailsPanel.add(btnCloseLessons);
 
+        btnTakeQuiz = new JButton("Take Quiz");
+        btnTakeQuiz.setBounds(90, 460, 150, 30);
+        lessonDetailsPanel.add(btnTakeQuiz);
+
+        // ---------------- Take Quiz Panel ----------------
+        takeQuizPanel = new JPanel(null);
+        takeQuizPanel.setBounds(10, 10, 970, 70);
+        takeQuizPanel.setBackground(new Color(75, 95, 110));
+        takeQuizPanel.setVisible(false);
+        mainPanel.add(takeQuizPanel);
+
+        lblTakeQuiz = new JLabel("Quiz: ");
+        lblTakeQuiz.setForeground(Color.WHITE);
+        lblTakeQuiz.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        lblTakeQuiz.setBounds(10, 10, 200, 25);
+        takeQuizPanel.add(lblTakeQuiz);
+
+        lblQPassMark = new JLabel("PassMark: ");
+        lblQPassMark.setForeground(Color.WHITE);
+        lblQPassMark.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        lblQPassMark.setBounds(220, 10, 200, 25);
+        takeQuizPanel.add(lblQPassMark);
+
+        // ---------------- Answer Questions Panel ----------------
+        AnsQuestionsPanel = new JPanel(null);
+        AnsQuestionsPanel.setBounds(10, 90, 970, 320);
+        AnsQuestionsPanel.setBackground(new Color(75, 95, 110));
+        AnsQuestionsPanel.setVisible(false);
+        mainPanel.add(AnsQuestionsPanel);
+
+        lblQuestionNum = new JLabel("Question " + currQuestionNum + ":");
+        lblQuestionNum.setForeground(Color.WHITE);
+        lblQuestionNum.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        lblQuestionNum.setBounds(10, 10, 200, 25);
+        AnsQuestionsPanel.add(lblQuestionNum);
+
+        txtCurrQuestion = new JTextArea();
+        txtCurrQuestion.setBounds(10, 40, 940, 40);
+        txtCurrQuestion.setLineWrap(true);
+        txtCurrQuestion.setWrapStyleWord(true);
+        txtCurrQuestion.setEditable(false);
+        AnsQuestionsPanel.add(txtCurrQuestion);
+
+        choices = new JTextArea[4];
+        rdos = new JRadioButton[4];
+        ButtonGroup group = new ButtonGroup();
+
+        for (int i = 0; i < 4; i++) {
+            choices[i] = new JTextArea();
+            choices[i].setBounds(10, 90 + (i * 50), 930, 40); // spacing for 4 options
+            choices[i].setEditable(false);
+            AnsQuestionsPanel.add(choices[i]);
+
+            rdos[i] = new JRadioButton();
+            rdos[i].setOpaque(true);
+            rdos[i].setForeground(Color.WHITE);
+            rdos[i].setBackground(new Color(75, 95, 110));
+            rdos[i].setBounds(950, 90 + (i * 50), 20, 40);
+            AnsQuestionsPanel.add(rdos[i]);
+
+            group.add(rdos[i]);
+        }
+
+        btnEnterAns = new JButton("Enter");
+        btnEnterAns.setBounds(10, 290, 100, 35);
+        AnsQuestionsPanel.add(btnEnterAns);
+
+        btnQuitQuiz = new JButton("Quit");
+        btnQuitQuiz.setBounds(120, 290, 100, 35);
+        AnsQuestionsPanel.add(btnQuitQuiz);
+
+        JLabel lblAnsStat = new JLabel("Your answer is:");
+        lblAnsStat.setForeground(Color.WHITE);
+        lblAnsStat.setBounds(240, 290, 120, 25);
+        AnsQuestionsPanel.add(lblAnsStat);
+
+        txtAnsStat = new JTextField();
+        txtAnsStat.setBounds(360, 290, 150, 25);
+        txtAnsStat.setEditable(false);
+        AnsQuestionsPanel.add(txtAnsStat);
+
+        JLabel lblCorrectAns = new JLabel("Correct Answer:");
+        lblCorrectAns.setForeground(Color.WHITE);
+        lblCorrectAns.setBounds(530, 290, 120, 25);
+        AnsQuestionsPanel.add(lblCorrectAns);
+
+        txtCorrectAns = new JTextField();
+        txtCorrectAns.setBounds(650, 290, 150, 25);
+        txtCorrectAns.setEditable(false);
+        AnsQuestionsPanel.add(txtCorrectAns);
+
+        btnShowMark = new JButton("Show Mark");
+        btnShowMark.setBounds(820, 290, 120, 35);
+        AnsQuestionsPanel.add(btnShowMark);
+
+        // ---------------- Attempt Result Panel ----------------
+        AttemptResultPanel = new JPanel(null);
+        AttemptResultPanel.setBounds(10, 420, 970, 90);
+        AttemptResultPanel.setBackground(new Color(75, 95, 110));
+        AttemptResultPanel.setVisible(false);
+        mainPanel.add(AttemptResultPanel);
+
+        JLabel lblResult = new JLabel("Your mark is:");
+        lblResult.setForeground(Color.WHITE);
+        lblResult.setBounds(10, 20, 120, 25);
+        AttemptResultPanel.add(lblResult);
+
+        txtResult = new JTextField();
+        txtResult.setBounds(140, 20, 100, 25);
+        txtResult.setEditable(false);
+        AttemptResultPanel.add(txtResult);
+
+        btnRetry = new JButton("Retry");
+        btnRetry.setBounds(260, 20, 100, 35);
+        AttemptResultPanel.add(btnRetry);
+        btnBye = new JButton("Done");
+        btnBye.setBounds(380, 20, 100, 35);
+        AttemptResultPanel.add(btnBye);
         // ---------------- Bottom Panel ----------------
         bottomPanel = new JPanel(null);
         bottomPanel.setBounds(0, 415, 980, 60);
@@ -278,17 +409,10 @@ public class StudentDashboard extends JFrame {
         btnSearch.addActionListener(e -> searchEnrolledCourses());
         btnSearchAvailable.addActionListener(e -> searchAvailableCourses());
         btnLogout.addActionListener(e -> System.exit(0));
-        chkLessonCompleted.addActionListener(e -> updateLessonProgress());
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                showMainPanel();
-            }
-        });
 
     }
 
-    // ---------------- Table Listeners ----------------
+    //  Table Listeners
     private void addTableSelectionListeners() {
         // Enrolled Table
         enrolledTable.getSelectionModel().addListSelectionListener(e -> {
@@ -336,6 +460,7 @@ public class StudentDashboard extends JFrame {
             certificateHolderPanel.setVisible(false);
 
             int courseId = Integer.parseInt(enrolledTable.getValueAt(selectedRow, 0).toString());
+            currentCourseId = courseId;
             loadLessons(courseId);
         });
 
@@ -346,12 +471,145 @@ public class StudentDashboard extends JFrame {
                 if (selectedRow != -1) {
                     txtLessonId.setText(lessonsTable.getValueAt(selectedRow, 0).toString());
                     txtLessonTitle.setText(lessonsTable.getValueAt(selectedRow, 1).toString());
-                    chkLessonCompleted.setSelected((Boolean) lessonsTable.getValueAt(selectedRow, 2));
-                }
+                    updateLessonProgress();               }
             }
         });
-    }
+        btnTakeQuiz.addActionListener(e -> {
+            int selectedLessonRow = lessonsTable.getSelectedRow();
+            if (selectedLessonRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a lesson first.");
+                return;
+            }
 
+            if (currentCourseId == -1) {
+                JOptionPane.showMessageDialog(this, "Internal error: course not selected.");
+                return;
+            }
+
+            lessonsPanel.setVisible(false);
+            coursesPanel.setVisible(false);
+            courseInfoPanel.setVisible(false);
+            bottomPanel.setVisible(false);
+            takeQuizPanel.setVisible(true);
+            AnsQuestionsPanel.setVisible(true);
+            AttemptResultPanel.setVisible(false);
+
+            int courseId = currentCourseId;
+            int lessonId = Integer.parseInt(lessonsTable.getValueAt(selectedLessonRow, 0).toString());
+
+            Course c = courseService.getCourseById(courseId);
+            Lesson lesson = c.getLessonById(lessonId);
+            currQuiz = lesson.getQuiz();
+
+            if (currQuiz == null) {
+                JOptionPane.showMessageDialog(this, "This lesson has no quiz.");
+                showMainPanel();
+                return;
+            }
+
+            lblTakeQuiz.setText("Quiz: " + currQuiz.getQuizId());
+            lblQPassMark.setText("PassMark: " + currQuiz.getPassMark());
+
+            ans = new LinkedHashMap<>();
+            currAttempt = new QuizAttempt(currQuiz.getQuizId());
+
+            currQuestionNum = 1;
+            btnRetry.setEnabled(true);
+            loadQuestion();
+        });
+
+
+        btnEnterAns.addActionListener(e -> {
+            int selectedIndex = -1;
+            for (int i = 0; i < rdos.length; i++) {
+                if (rdos[i].isSelected()) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            if (selectedIndex == -1) {
+                JOptionPane.showMessageDialog(this, "Please select an answer.");
+                return;
+            }
+            ans.put(currQuestionNum, selectedIndex);
+            currAttempt.addAnswer(currQuestionNum, selectedIndex, currQuiz);
+
+            int correct = currQuiz.getQuestion(currQuestionNum).getCorrectAnsIndex();
+            txtAnsStat.setText(selectedIndex == correct ? "Correct" : "Wrong");
+            txtCorrectAns.setText(String.valueOf(correct));
+            for (JRadioButton r : rdos) r.setSelected(false);
+
+            currQuestionNum++;
+            loadQuestion();
+        });
+
+        btnShowMark.addActionListener(e -> {
+            try {
+                currAttempt.calcScore(currQuiz);
+
+                txtResult.setText(String.valueOf(currAttempt.getScore()));
+                AttemptResultPanel.setVisible(true);
+                AnsQuestionsPanel.setVisible(false);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            }
+        });
+
+        btnRetry.addActionListener(e -> {
+            currQuestionNum = 1;
+            currAttempt = new QuizAttempt(currQuiz.getQuizId());
+            ans.clear();
+
+            AnsQuestionsPanel.setVisible(true);
+            AttemptResultPanel.setVisible(false);
+
+            loadQuestion();
+        });
+
+
+        btnBye.addActionListener(e -> {
+            try {
+                studentService.takeQuiz(
+                        student.getUserId(),
+                        currQuiz.getQuizId(),
+                        ans
+                );
+
+                JOptionPane.showMessageDialog(this, "Attempt saved successfully!");
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            }
+            lessonsPanel.setVisible(true);
+            coursesPanel.setVisible(false);
+            courseInfoPanel.setVisible(false);
+            bottomPanel.setVisible(false);
+            takeQuizPanel.setVisible(false);
+            AnsQuestionsPanel.setVisible(false);
+            AttemptResultPanel.setVisible(false);
+
+            currQuiz = null;
+            currAttempt = null;
+            currQuestionNum = 1;
+            ans = null;
+
+            btnRetry.setEnabled(false);
+        });
+
+        btnRetry.addActionListener(e -> {
+            currQuestionNum = 1;
+            currAttempt = new QuizAttempt(currQuiz.getQuizId());
+            if (ans != null) ans.clear();
+
+            AnsQuestionsPanel.setVisible(true);
+            AttemptResultPanel.setVisible(false);
+
+            loadQuestion();
+        });
+
+
+    }
     private void loadLessons(int courseId) {
         DefaultTableModel model = (DefaultTableModel) lessonsTable.getModel();
         model.setRowCount(0);
@@ -361,7 +619,6 @@ public class StudentDashboard extends JFrame {
             model.addRow(new Object[]{l.getLessonId(), l.getTitle(), completed});
         }
     }
-
     private void loadEnrolledCourses() {
         try {
             DefaultTableModel model = (DefaultTableModel) enrolledTable.getModel();
@@ -374,7 +631,6 @@ public class StudentDashboard extends JFrame {
             JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void loadAvailableCourses() {
         try {
             DefaultTableModel model = (DefaultTableModel) availableTable.getModel();
@@ -387,7 +643,6 @@ public class StudentDashboard extends JFrame {
             JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void searchEnrolledCourses() {
         try {
             String keyword = txtSearchEnrolled.getText().trim();
@@ -403,7 +658,6 @@ public class StudentDashboard extends JFrame {
             JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void searchAvailableCourses() {
         try {
             String keyword = txtSearchAvailable.getText().trim();
@@ -419,7 +673,6 @@ public class StudentDashboard extends JFrame {
             JOptionPane.showMessageDialog(null, "" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void enrollSelectedCourse() {
         int selectedRow = availableTable.getSelectedRow();
         if (selectedRow != -1) {
@@ -450,19 +703,20 @@ public class StudentDashboard extends JFrame {
         try {
             int lessonId = Integer.parseInt(txtLessonId.getText());
             int courseId = Integer.parseInt(txtCourseId.getText());
-            boolean completed = chkLessonCompleted.isSelected();
-
-            boolean saved = studentService.setLessonProgress(student.getUserId(), courseId, lessonId, completed);
-
-            if (!saved) {
-                JOptionPane.showMessageDialog(this, "Failed to update lesson progress!");
-            } else {
-                int selectedRow = lessonsTable.getSelectedRow();
+            boolean completed = studentService.getLessonProgress(
+                    student.getUserId(),
+                    courseId,
+                    lessonId
+            );
+            chkLessonCompleted.setSelected(completed);
+            int selectedRow = lessonsTable.getSelectedRow();
+            if (selectedRow != -1) {
                 lessonsTable.setValueAt(completed, selectedRow, 2);
-                try {
-                    updateEarnButtonState(courseId);
-                } catch (Exception ignored) {}
             }
+            try {
+                updateEarnButtonState(courseId);
+            } catch (Exception ignored) {}
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Select a lesson first!");
         }
@@ -496,8 +750,8 @@ public class StudentDashboard extends JFrame {
 
             ActionListener closeListener = evt -> showMainPanel();
             CertificateDashboardPanel certPanel = new CertificateDashboardPanel(student, cert, course, downloadListener, closeListener);
-            certificatePanel.setBounds(0, 0, 480, 220);
-            certificateHolderPanel.add(certificatePanel);
+            certPanel.setBounds(0, 0, 480, 220);
+            certificateHolderPanel.add(certPanel);
 
             coursesPanel.setVisible(false);
             courseInfoPanel.setVisible(false);
@@ -531,7 +785,8 @@ public class StudentDashboard extends JFrame {
             try {
                 int courseId = Integer.parseInt(txtCourseId.getText());
                 updateEarnButtonState(courseId);
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
     }
     private void updateEarnButtonState(int courseId) {
@@ -607,4 +862,24 @@ public class StudentDashboard extends JFrame {
         mainPanel.revalidate();
         mainPanel.repaint();
     }
+    private void loadQuestion() {
+        if (currQuiz == null) return;
+        if (currQuestionNum > currQuiz.getTotalQ()) {
+            // finished - show result but do NOT save here
+            currAttempt.calcScore(currQuiz);
+            txtResult.setText(String.valueOf(currAttempt.getScore()));
+            AttemptResultPanel.setVisible(true);
+            AnsQuestionsPanel.setVisible(false);
+            return;
+        }
+        Question q = currQuiz.getQuestion(currQuestionNum);
+        lblQuestionNum.setText("Question " + currQuestionNum + ":");
+        txtCurrQuestion.setText(q.getQText());
+        String[] opts = q.getChoices().toArray(new String[0]);
+        for (int i = 0; i < 4; i++) {
+            choices[i].setText(i < opts.length ? opts[i] : "");
+            rdos[i].setSelected(false);
+        }
+    }
+
 }

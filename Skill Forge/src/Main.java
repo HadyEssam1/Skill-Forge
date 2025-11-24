@@ -18,8 +18,9 @@ public class Main {
             InstructorService instructorService = new InstructorService(courseJsonManager, userJsonManager);
             StudentService studentService = new StudentService(userJsonManager, courseJsonManager,courseService);
             AdminService adminService=new AdminService(courseJsonManager,userJsonManager);
+            Analytics analytics=new Analytics(courseJsonManager,userJsonManager,courseService,studentService);
             CertificateService certificateService=new CertificateService(userJsonManager,courseJsonManager,courseService,studentService);
-                Login loginFrame = new Login(userService, instructorService, studentService,adminService,courseService,certificateService,certificateUtilities);
+                Login loginFrame = new Login(userService, instructorService, studentService,adminService,courseService,analytics,certificateService,certificateUtilities);
             loginFrame.setVisible(true);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, ""+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

@@ -21,13 +21,15 @@ public class Login extends JFrame {
     private AdminService adminService;
     private  CertificateService certificateService;
     private CertificateUtilities certificateUtilities;
+    private Analytics analytics;
     private JTextField jTextField1;
     private JPasswordField jPasswordField1;
     private JButton jButton1, jButton2;
     private JLabel jLabel1, jLabel2, jLabel3, signUpLabel;
     private JPanel jPanel2;
-    public Login(UserService userService , InstructorService instructorService, StudentService studentService, AdminService adminService, CourseService courseService, CertificateService certificateService, CertificateUtilities certificateUtilities) {
+    public Login(UserService userService , InstructorService instructorService, StudentService studentService, AdminService adminService, CourseService courseService, Analytics analytics,CertificateService certificateService, CertificateUtilities certificateUtilities) {
        this.userService=userService;
+       this.analytics=analytics;
        this.instructorService=instructorService;
        this.studentService=studentService;
        this.courseService=courseService;
@@ -111,7 +113,7 @@ public class Login extends JFrame {
                     if (user instanceof Instructor) {
                         Instructor instructor = (Instructor) user;
                         dispose();
-                        InstructorDashboard instructorDashboard = new InstructorDashboard(instructor,instructorService,courseService);
+                        InstructorDashboard instructorDashboard = new InstructorDashboard(instructor,instructorService,courseService,studentService,analytics);
                         instructorDashboard.setVisible(true);
                     } else if (user instanceof Student) {
                         Student student = (Student) user;

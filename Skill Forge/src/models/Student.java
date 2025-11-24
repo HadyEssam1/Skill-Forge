@@ -74,8 +74,13 @@ public class Student extends User {
         }
         return attempts;
     }
-    public Map<Integer, List<QuizAttempt>> getQuizAttemptsMap() {
+    public Map<Integer, List<QuizAttempt>> getQuizAttempts() {
         return quizAttempts;
     }
+
+    public void setQuizAttempts(Map<Integer, List<QuizAttempt>> quizAttempts) {
+        this.quizAttempts = quizAttempts;
+    }
+
 
 }

@@ -20,6 +20,7 @@ public class QuizAttempt {
         this.passed=false;
         this.answers=new LinkedHashMap<>();
     }
+    public QuizAttempt(){}
     public void validateQuiz(Quiz quiz){
         if (quiz==null){
             throw new IllegalArgumentException("quiz not found");
@@ -57,7 +58,28 @@ public class QuizAttempt {
         passed=(score>=quiz.getPassMark());
     }
     public boolean isPassed(){return passed;}
+    public void setQuizId(int quizId) {
+        this.quizId = quizId;
     }
+
+    public void setAttemptDate(LocalDateTime attemptDate) {
+        this.attemptDate = attemptDate;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setPassed(boolean passed) {
+        this.passed = passed;
+    }
+
+    public void setAnswers(Map<Integer, Integer> answers) {
+        this.answers = answers;
+    }
+
+}
+
 
 
 

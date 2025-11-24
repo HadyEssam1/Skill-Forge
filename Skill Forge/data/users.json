@@ -19,8 +19,127 @@
   "coursesEnrolled" : [ 1 ],
   "progressMap" : {
     "1" : {
-      "1" : true
+      "1" : true,
+      "2" : true
     }
+  },
+  "quizAttempts" : {
+    "1763956945" : [ {
+      "attemptDate" : "2025-11-24T07:40:33.3029437",
+      "score" : 0,
+      "passed" : false,
+      "answers" : { }
+    }, {
+      "attemptDate" : "2025-11-24T07:52:08.2519844",
+      "score" : 100,
+      "passed" : true,
+      "answers" : {
+        "1" : 0
+      }
+    }, {
+      "attemptDate" : "2025-11-24T07:57:39.6495797",
+      "score" : 0,
+      "passed" : false,
+      "answers" : {
+        "1" : 1
+      }
+    }, {
+      "attemptDate" : "2025-11-24T07:58:14.6061428",
+      "score" : 100,
+      "passed" : true,
+      "answers" : {
+        "1" : 0
+      }
+    }, {
+      "attemptDate" : "2025-11-24T07:58:59.8355536",
+      "score" : 0,
+      "passed" : false,
+      "answers" : {
+        "1" : 2
+      }
+    }, {
+      "attemptDate" : "2025-11-24T07:59:09.7132415",
+      "score" : 0,
+      "passed" : false,
+      "answers" : { }
+    }, {
+      "attemptDate" : "2025-11-24T07:59:39.4934684",
+      "score" : 0,
+      "passed" : false,
+      "answers" : { }
+    }, {
+      "attemptDate" : "2025-11-24T08:01:42.3276282",
+      "score" : 100,
+      "passed" : true,
+      "answers" : {
+        "1" : 0
+      }
+    } ],
+    "1763964589" : [ {
+      "attemptDate" : "2025-11-24T08:12:50.1415511",
+      "score" : 33,
+      "passed" : false,
+      "answers" : {
+        "1" : 0,
+        "2" : 2,
+        "3" : 2
+      }
+    }, {
+      "attemptDate" : "2025-11-24T08:13:32.0339953",
+      "score" : 66,
+      "passed" : false,
+      "answers" : {
+        "1" : 0,
+        "2" : 1,
+        "3" : 2
+      }
+    }, {
+      "attemptDate" : "2025-11-24T08:15:57.9293285",
+      "score" : 100,
+      "passed" : true,
+      "answers" : {
+        "1" : 0,
+        "2" : 1,
+        "3" : 3
+      }
+    } ],
+    "1763965513" : [ {
+      "attemptDate" : "2025-11-24T08:28:10.0701974",
+      "score" : 66,
+      "passed" : false,
+      "answers" : {
+        "1" : 0,
+        "2" : 0,
+        "3" : 2
+      }
+    }, {
+      "attemptDate" : "2025-11-24T08:28:54.3611122",
+      "score" : 100,
+      "passed" : true,
+      "answers" : {
+        "1" : 0,
+        "2" : 0,
+        "3" : 3
+      }
+    }, {
+      "attemptDate" : "2025-11-24T08:46:30.2686168",
+      "score" : 100,
+      "passed" : true,
+      "answers" : {
+        "1" : 0,
+        "2" : 0,
+        "3" : 3
+      }
+    }, {
+      "attemptDate" : "2025-11-24T08:49:04.0498043",
+      "score" : 100,
+      "passed" : true,
+      "answers" : {
+        "1" : 0,
+        "2" : 0,
+        "3" : 3
+      }
+    } ]
   },
   "earnedCertificates" : [ {
     "certificateID" : "f9f98a93-58ca-41cb-83be-bba161f3bb48",
@@ -28,6 +147,5 @@
     "studentID" : 3,
     "courseID" : 1
   } ],
-  "quizAttemptsMap" : { },
   "userId" : 3
 } ]
