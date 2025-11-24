@@ -35,10 +35,10 @@ public class Analytics {
             for (User u : users) {
                 if (u.getUserId() == sid && u instanceof Student s) {
                     int quizId= courseService.getQuizIdByLesson(courseId,lessonId);
+
                     QuizAttempt best = studentService.getBestAttempt(s.getUserId(), quizId);
-                    Integer score = best.getScore();
-                    if (score != null) {
-                        sum += score;
+                    if (best != null) {
+                        sum += best.getScore();
                         count++;
                     }
                 }
@@ -46,6 +46,19 @@ public class Analytics {
         }
         return count == 0 ? 0 : (sum * 1.0) / count;
     }
+
+    public Map<Integer, Double> getLessonQuizAverages(int courseId) throws Exception {
+        Map<Integer, Double> lessonAverages = new HashMap<>();
+        Course course = courseManager.getById(courseId);
+        if (course == null) return lessonAverages;                             // بتجيب الافرج لكل ليسون في الكورس الواحد
+
+        for (Lesson lesson : course.getLessons()) {
+            double avg = getLessonQuizAverage(courseId, lesson.getLessonId());
+            lessonAverages.put(lesson.getLessonId(), avg);
+        }
+        return lessonAverages;
+    }
+
 
     public double getCourseCompletionRate(int courseId) throws Exception {
         Course course = courseManager.getById(courseId);
@@ -115,7 +128,7 @@ public class Analytics {
         if (course == null) {
             return data;
         }
-                                                                            //analytics 3shan el dashboard
+        //analytics 3shan el dashboard
         data.put("completionRate", getCourseCompletionRate(courseId));
 
         Map<Integer, Double> lessonAverages = new HashMap<>();

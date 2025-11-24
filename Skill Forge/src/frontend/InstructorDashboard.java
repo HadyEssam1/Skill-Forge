@@ -1,13 +1,23 @@
 package frontend;
 
+import managers.CourseJsonManager;
+import managers.UserJsonManager;
 import models.*;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
+import service.Analytics;
 import service.CourseService;
 import service.InstructorService;
+import service.StudentService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Map;
 
 public class InstructorDashboard extends JFrame {
 
@@ -21,7 +31,7 @@ public class InstructorDashboard extends JFrame {
     private JTextArea txtChoice1, txtChoice2, txtChoice3, txtChoice4, txtQuestion;
     private JButton btnAddCourse, btnEditCourse, btnDeleteCourse, btnCancelCourse, btnSaveCourse;
     private JButton btnAddLesson, btnEditLesson, btnDeleteLesson, btnSaveLesson, btnCancelLesson, btnCreateQuiz, btnRemoveQuiz;
-    private JButton btnContinueQuiz, btnCancelQuiz;
+    private JButton btnContinueQuiz, btnCancelQuiz,btnAnalytics;
     private JButton btnAddQuestion, btnClearQuestion, btnFinishQuiz;
     private JButton btnViewLessons, btnCloseLessons;
     private JButton btnViewStudents, btnCloseStudents, btnLogout;
@@ -36,11 +46,22 @@ public class InstructorDashboard extends JFrame {
     private int quizId;
     private Quiz currentQuiz; // now strongly-typed Quiz
     private JComboBox<String> comboCorrect;
+    private CourseJsonManager courseManager;
+    private UserJsonManager userManager;
+    private StudentService studentService;
 
-    public InstructorDashboard(Instructor instructor, InstructorService instructorService, CourseService courseService) {
+    public InstructorDashboard(Instructor instructor, InstructorService instructorService, CourseService courseService,
+                               CourseJsonManager courseManager,
+                               UserJsonManager userManager,
+                               StudentService studentService) {
+
         this.instructor = instructor;
         this.instructorService = instructorService;
         this.courseService = courseService;
+        this.courseManager = courseManager;
+        this.userManager = userManager;
+        this.studentService = studentService;
+
         initComponents();
         loadCreatedCourses();
     }
@@ -233,6 +254,10 @@ public class InstructorDashboard extends JFrame {
         btnCancelCourse = new JButton("Cancel");
         btnCancelCourse.setBounds(220, 250, 100, 35);
         addCoursePanel.add(btnCancelCourse);
+
+        btnAnalytics = new JButton("View Analytics");
+        btnAnalytics.setBounds(270, 350, 120, 35);
+        coursesPanel.add(btnAnalytics);
 
         // Add Lesson Panel
         addLessonPanel = new JPanel(null);
@@ -649,6 +674,23 @@ public class InstructorDashboard extends JFrame {
         });
 
         btnCancelQuiz.addActionListener(e -> showPanel(lessonsPanel));
+        btnAnalytics.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int selectedRow = coursesTable.getSelectedRow();
+                    if (selectedRow == -1) {
+                        throw new Exception("Please select a course first.");
+                    }
+                    int courseId = Integer.parseInt(coursesTable.getValueAt(selectedRow, 0).toString());
+                    openInsights(courseId);
+                }
+
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
 // Add Question
         btnAddQuestion.addActionListener(e -> {
@@ -937,4 +979,60 @@ public class InstructorDashboard extends JFrame {
         txtNewCourseTitle.setText("");
         txtNewCourseDesc.setText("");
     }
+    private void openInsights(int courseId) {
+        try {
+            Analytics analytics = new Analytics(courseManager, userManager, courseService, studentService);
+            Map<String, Object> data = analytics.getInstructorInsights(courseId);
+            Map<Integer, Double> lessonAverages = (Map<Integer, Double>) data.get("quizAverages");
+            double completionRate = (double) data.get("completionRate");
+            // Convert IDs to names for chart
+            Map<String, Double> lessonChartData = new HashMap<>();
+            Course c = courseManager.getById(courseId);
+            for (Lesson l : c.getLessons()) {
+                double avg = lessonAverages.get(l.getLessonId());
+                lessonChartData.put(l.getTitle(), avg);
+            }
+
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            for (Lesson lesson : course.getLessons()) {
+                double avg = analytics.getLessonQuizAverage(courseId, lesson.getLessonId());
+                dataset.addValue(avg, "Average Score", lesson.getTitle());
+            }
+
+
+            // CHART 1 (Lesson Avg)
+            JFreeChart quizChart = ChartGenerator.createLessonAverageChart(c.getTitle(), lessonChartData);
+            ChartFrame frame1 = new ChartFrame("Lesson Quiz Averages", quizChart);
+            frame1.setVisible(true);
+            frame1.setSize(600, 400);
+            frame1.setLocation(0, 0);
+
+
+            // CHART 2 (Completion Rate)
+            JFreeChart completionChart = ChartGenerator.createCompletionChart(c.getTitle(), completionRate);
+            ChartFrame frame2 = new ChartFrame("Completion Rate", completionChart);
+            frame2.setVisible(true);
+            frame2.setSize(600, 400);
+            frame2.setLocation(610, 0);
+
+
+            // CHART 3 (Student Performance Progress)
+            Map<String, Double> studentProgress = (Map<String, Double>) data.get("studentProgress");
+            JFreeChart studentChart = ChartGenerator.createStudentProgressChart(c.getTitle(), studentProgress);
+            ChartFrame frame3 = new ChartFrame("Student Progress", studentChart);
+            frame3.setSize(600, 400);
+            frame3.setVisible(true);
+            frame3.setLocation(310, 420);
+
+            System.out.println("Lesson Avg: " + lessonAverages);
+            System.out.println("Completion Rate: " + completionRate);
+            System.out.println("Progress: " + studentProgress);
+
+        } catch (Exception ex) {
+            ex.printStackTrace(); // <-- SEE ERROR
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
+    }
+
+
 }
